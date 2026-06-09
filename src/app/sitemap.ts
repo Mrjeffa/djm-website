@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next';
+export const runtime = 'edge';
 import { getMotors } from '@/lib/motors';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

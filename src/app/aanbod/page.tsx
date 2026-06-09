@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   description: 'Bekijk alle beschikbare occasion motors bij De Jonge Motoren in Tholen, Zeeland. Filter op merk, type, prijs en km-stand.',
 };
 
+export const runtime = 'edge';
 export const revalidate = 60;
 
 export default async function AanbodPage({

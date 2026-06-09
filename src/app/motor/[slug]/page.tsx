@@ -5,6 +5,7 @@ import MotorCard from '@/components/MotorCard';
 import { Bike, Calendar, Gauge, Zap, MessageCircle, Phone } from 'lucide-react';
 import type { Metadata } from 'next';
 
+export const runtime = 'edge';
 export const revalidate = 60;
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {

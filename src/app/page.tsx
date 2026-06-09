@@ -4,6 +4,7 @@ import { getNieuweMotors } from '@/lib/motors';
 import MotorCard from '@/components/MotorCard';
 import InkoopForm from '@/components/InkoopForm';
 
+export const runtime = 'edge';
 export const revalidate = 60;
 
 export default async function HomePage() {
