@@ -1,9 +1,11 @@
-import { createClient } from '@/utils/supabase/client';
+import { createClient } from '@/utils/supabase/server';
+import { cookies } from 'next/headers';
 export type { Motor } from './supabase';
 import type { Motor } from './supabase';
 
-function getClient() {
-  return createClient();
+async function getClient() {
+  const cookieStore = await cookies();
+  return createClient(cookieStore);
 }
 
 export async function getMotors(filters?: {
@@ -12,7 +14,7 @@ export async function getMotors(filters?: {
   maxPrijs?: number;
   maxKm?: number;
 }): Promise<Motor[]> {
-  const supabase = getClient();
+  const supabase = await getClient();
   let query = supabase
     .from('motors')
     .select('*')
@@ -36,7 +38,7 @@ export async function getMotors(filters?: {
 }
 
 export async function getMotorBySlug(slug: string): Promise<Motor | null> {
-  const supabase = getClient();
+  const supabase = await getClient();
   const { data, error } = await supabase
     .from('motors')
     .select('*')
@@ -48,7 +50,7 @@ export async function getMotorBySlug(slug: string): Promise<Motor | null> {
 }
 
 export async function getNieuweMotors(limit = 4): Promise<Motor[]> {
-  const supabase = getClient();
+  const supabase = await getClient();
   const { data, error } = await supabase
     .from('motors')
     .select('*')
