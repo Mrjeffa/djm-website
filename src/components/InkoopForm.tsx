@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/utils/supabase/client';
+const supabase = createClient();
 
 export default function InkoopForm() {
   const [form, setForm] = useState({ naam: '', telefoon: '', motor: '', km: '' });

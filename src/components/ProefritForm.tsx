@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/utils/supabase/client';
+const supabase = createClient();
 
 type Props = {
   motorId?: string;

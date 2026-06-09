@@ -1,5 +1,10 @@
-import { supabase, Motor } from './supabase';
-export type { Motor };
+import { createClient } from '@/utils/supabase/client';
+export type { Motor } from './supabase';
+import type { Motor } from './supabase';
+
+function getClient() {
+  return createClient();
+}
 
 export async function getMotors(filters?: {
   merk?: string;
@@ -7,6 +12,7 @@ export async function getMotors(filters?: {
   maxPrijs?: number;
   maxKm?: number;
 }): Promise<Motor[]> {
+  const supabase = getClient();
   let query = supabase
     .from('motors')
     .select('*')
@@ -19,11 +25,18 @@ export async function getMotors(filters?: {
   if (filters?.maxKm) query = query.lte('km', filters.maxKm);
 
   const { data, error } = await query;
-  if (error) return mockMotors;
+  if (error) return mockMotors.filter(m => {
+    if (filters?.merk && m.merk !== filters.merk) return false;
+    if (filters?.type && m.type !== filters.type) return false;
+    if (filters?.maxPrijs && m.prijs > filters.maxPrijs) return false;
+    if (filters?.maxKm && m.km > filters.maxKm) return false;
+    return true;
+  });
   return data || mockMotors;
 }
 
 export async function getMotorBySlug(slug: string): Promise<Motor | null> {
+  const supabase = getClient();
   const { data, error } = await supabase
     .from('motors')
     .select('*')
@@ -35,6 +48,7 @@ export async function getMotorBySlug(slug: string): Promise<Motor | null> {
 }
 
 export async function getNieuweMotors(limit = 4): Promise<Motor[]> {
+  const supabase = getClient();
   const { data, error } = await supabase
     .from('motors')
     .select('*')
@@ -59,7 +73,6 @@ export function formatKm(km: number): string {
   return new Intl.NumberFormat('nl-NL').format(km) + ' km';
 }
 
-// Mock data for when Supabase is not configured
 export const mockMotors: Motor[] = [
   {
     id: '1',
