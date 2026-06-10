@@ -1,5 +1,4 @@
-import { createClient } from '@/utils/supabase/server';
-import { cookies } from 'next/headers';
+// Client-safe: geen server imports
 
 export type DagCode = 'ma' | 'di' | 'wo' | 'do' | 'vr' | 'za' | 'zo';
 
@@ -8,7 +7,6 @@ export const DAG_LABELS: Record<DagCode, string> = {
   do: 'Donderdag', vr: 'Vrijdag', za: 'Zaterdag', zo: 'Zondag',
 };
 
-// JS Date.getDay(): 0=zo,1=ma,...,6=za
 export const JS_DAY_TO_CODE: Record<number, DagCode> = {
   0: 'zo', 1: 'ma', 2: 'di', 3: 'wo', 4: 'do', 5: 'vr', 6: 'za',
 };
@@ -27,7 +25,7 @@ export type Instellingen = {
   opmerking: string;
 };
 
-const FALLBACK: Instellingen = {
+export const INSTELLINGEN_FALLBACK: Instellingen = {
   openingstijden: {
     ma: { open: null, sluit: null, gesloten: true },
     di: { open: null, sluit: null, gesloten: true },
@@ -42,28 +40,6 @@ const FALLBACK: Instellingen = {
   max_afspraken_per_dag: 5,
   opmerking: '',
 };
-
-export async function getInstellingen(): Promise<Instellingen> {
-  try {
-    const cookieStore = await cookies();
-    const supabase = createClient(cookieStore);
-    const { data } = await supabase
-      .from('instellingen')
-      .select('openingstijden, gesloten_dagen, gesloten_weken, max_afspraken_per_dag, opmerking')
-      .eq('id', 1)
-      .single();
-    if (!data) return FALLBACK;
-    return {
-      openingstijden: data.openingstijden ?? FALLBACK.openingstijden,
-      gesloten_dagen: data.gesloten_dagen ?? [],
-      gesloten_weken: data.gesloten_weken ?? [],
-      max_afspraken_per_dag: data.max_afspraken_per_dag ?? 5,
-      opmerking: data.opmerking ?? '',
-    };
-  } catch {
-    return FALLBACK;
-  }
-}
 
 export function isDateGesloten(dateStr: string, inst: Instellingen): string | null {
   if (!dateStr) return null;
@@ -82,7 +58,6 @@ export function formatOpeningsTijden(inst: Instellingen): { label: string; waard
     const dag = volgorde[i];
     const tijden = inst.openingstijden[dag];
     if (!tijden) { i++; continue; }
-    // Groepeer aaneengesloten dagen met zelfde tijden
     let j = i + 1;
     while (
       j < volgorde.length &&

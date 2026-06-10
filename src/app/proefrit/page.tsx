@@ -1,6 +1,6 @@
 import ProefritForm from '@/components/ProefritForm';
 import { getMotors } from '@/lib/motors';
-import { getInstellingen } from '@/lib/instellingen';
+import { getInstellingen } from '@/lib/getInstellingen';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {

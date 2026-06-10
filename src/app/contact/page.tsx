@@ -1,6 +1,7 @@
 import { Phone, Mail, MapPin, MessageCircle, Clock, Wrench } from 'lucide-react';
 import ServiceForm from '@/components/ServiceForm';
-import { getInstellingen, formatOpeningsTijden } from '@/lib/instellingen';
+import { getInstellingen } from '@/lib/getInstellingen';
+import { formatOpeningsTijden } from '@/lib/instellingen';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
