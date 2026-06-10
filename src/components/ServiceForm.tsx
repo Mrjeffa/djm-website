@@ -5,28 +5,27 @@ import { createClient } from '@/utils/supabase/client';
 
 const supabase = createClient();
 
-type Motor = { id: string; merk: string; model: string; bouwjaar: number };
+const soorten = [
+  'Algemeen onderhoud',
+  'Banden wisselen',
+  'Ketting & tandwielen',
+  'Remmen',
+  'APK / keuring',
+  'Schade / reparatie',
+  'Electra / accu',
+  'Anders',
+];
 
-type Props = {
-  motorId?: string;
-  motorNaam?: string;
-  motoren?: Motor[];
-};
-
-export default function ProefritForm({ motorId, motorNaam, motoren = [] }: Props) {
+export default function ServiceForm() {
   const [form, setForm] = useState({
     naam: '',
     telefoon: '',
     email: '',
+    soort: '',
+    opmerking: '',
     datum: '',
-    geselecteerdeMotorId: motorId || '',
   });
   const [status, setStatus] = useState<'idle' | 'loading' | 'ok' | 'err'>('idle');
-
-  const geselecteerde = motoren.find(m => m.id === form.geselecteerdeMotorId);
-  const displayNaam = geselecteerde
-    ? `${geselecteerde.merk} ${geselecteerde.model} (${geselecteerde.bouwjaar})`
-    : motorNaam || '';
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -36,10 +35,9 @@ export default function ProefritForm({ motorId, motorNaam, motoren = [] }: Props
       telefoon: form.telefoon,
       email: form.email || null,
       datum: form.datum || new Date().toISOString().split('T')[0],
-      type: 'proefrit',
-      voorraad_motor_id: form.geselecteerdeMotorId || null,
+      type: 'service',
       status: 'aangevraagd',
-      opmerking: displayNaam ? `Proefrit aanvraag voor: ${displayNaam}` : undefined,
+      opmerking: [form.soort && `Soort: ${form.soort}`, form.opmerking].filter(Boolean).join(' — ') || null,
     });
     setStatus(error ? 'err' : 'ok');
   }
@@ -48,41 +46,13 @@ export default function ProefritForm({ motorId, motorNaam, motoren = [] }: Props
     return (
       <div className="bg-[#E31E24]/10 border border-[#E31E24]/30 p-6 text-center">
         <div className="font-['Barlow_Condensed'] font-black text-2xl text-[#E31E24] uppercase mb-2">Aanvraag ontvangen!</div>
-        <p className="text-sm text-[#555]">Jeffrey of Anouk belt je zo snel mogelijk terug om een moment af te spreken.</p>
+        <p className="text-sm text-[#555]">Jeffrey of Anouk belt je zo snel mogelijk terug om een afspraak te maken.</p>
       </div>
     );
   }
 
   return (
     <form onSubmit={submit} className="space-y-3">
-      {/* Motor selector — alleen tonen als er motors zijn én geen motor pre-selected */}
-      {motoren.length > 0 && (
-        <div>
-          <label className="block text-xs font-['Barlow_Condensed'] font-bold uppercase tracking-wide text-[#888] mb-1">
-            Kies een motor
-          </label>
-          <select
-            value={form.geselecteerdeMotorId}
-            onChange={e => setForm(f => ({ ...f, geselecteerdeMotorId: e.target.value }))}
-            className="w-full border border-[#E5E5E5] px-3 py-2.5 text-sm focus:outline-none focus:border-[#E31E24] bg-white font-['Barlow_Condensed'] font-bold uppercase"
-          >
-            <option value="">Nog niet zeker / geen voorkeur</option>
-            {motoren.map(m => (
-              <option key={m.id} value={m.id}>
-                {m.bouwjaar} {m.merk} {m.model}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
-
-      {/* Vaste motor label (motor detail pagina) */}
-      {!motoren.length && displayNaam && (
-        <div className="text-sm text-[#888] pb-2 border-b border-[#eee]">
-          Proefrit voor: <strong className="text-[#1A1A1A]">{displayNaam}</strong>
-        </div>
-      )}
-
       <input
         required
         type="text"
@@ -108,6 +78,28 @@ export default function ProefritForm({ motorId, motorNaam, motoren = [] }: Props
       />
       <div>
         <label className="block text-xs font-['Barlow_Condensed'] font-bold uppercase tracking-wide text-[#888] mb-1">
+          Soort service
+        </label>
+        <select
+          value={form.soort}
+          onChange={e => setForm(f => ({ ...f, soort: e.target.value }))}
+          className="w-full border border-[#E5E5E5] px-3 py-2.5 text-sm focus:outline-none focus:border-[#E31E24] bg-white font-['Barlow_Condensed'] font-bold uppercase"
+        >
+          <option value="">Kies een categorie (optioneel)</option>
+          {soorten.map(s => (
+            <option key={s} value={s}>{s}</option>
+          ))}
+        </select>
+      </div>
+      <textarea
+        placeholder="Omschrijving (optioneel)"
+        value={form.opmerking}
+        onChange={e => setForm(f => ({ ...f, opmerking: e.target.value }))}
+        rows={3}
+        className="w-full border border-[#E5E5E5] px-3 py-2.5 text-sm focus:outline-none focus:border-[#E31E24] resize-none"
+      />
+      <div>
+        <label className="block text-xs font-['Barlow_Condensed'] font-bold uppercase tracking-wide text-[#888] mb-1">
           Gewenste datum (optioneel)
         </label>
         <input
@@ -123,7 +115,7 @@ export default function ProefritForm({ motorId, motorNaam, motoren = [] }: Props
         disabled={status === 'loading'}
         className="w-full bg-[#E31E24] text-white font-['Barlow_Condensed'] font-black uppercase tracking-widest py-3.5 hover:bg-[#c01920] transition-colors disabled:opacity-60 cursor-pointer"
       >
-        {status === 'loading' ? 'Versturen...' : 'Proefrit aanvragen'}
+        {status === 'loading' ? 'Versturen...' : 'Service aanvragen'}
       </button>
       {status === 'err' && (
         <p className="text-xs text-red-600 text-center">Er ging iets mis. Bel ons direct op 0166-606090.</p>

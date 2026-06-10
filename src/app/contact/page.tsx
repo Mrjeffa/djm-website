@@ -1,34 +1,32 @@
-'use client';
+import { Phone, Mail, MapPin, MessageCircle, Clock, Wrench } from 'lucide-react';
+import ServiceForm from '@/components/ServiceForm';
+import type { Metadata } from 'next';
 
-import { useState } from 'react';
-import { Phone, Mail, MapPin, MessageCircle, Clock } from 'lucide-react';
+export const metadata: Metadata = {
+  title: 'Contact & Service | De Jonge Motoren',
+  description: 'Neem contact op met De Jonge Motoren in Tholen. Bel 0166-606090, stuur een WhatsApp of vraag online een servicebeurt aan.',
+};
 
 export default function ContactPage() {
-  const [form, setForm] = useState({ naam: '', email: '', telefoon: '', bericht: '' });
-  const [status, setStatus] = useState<'idle' | 'ok'>('idle');
-
-  function set(k: string, v: string) { setForm(f => ({ ...f, [k]: v })); }
-
-  function submit(e: React.FormEvent) {
-    e.preventDefault();
-    setStatus('ok');
-  }
-
   return (
     <div>
-      <div className="bg-[#1A1A1A] text-white py-16 px-4">
+      <div className="bg-[#0A0A0A] text-white py-16 px-4">
         <div className="max-w-6xl mx-auto">
-          <div className="font-['Barlow_Condensed'] text-[10px] font-bold uppercase tracking-[3px] text-[#E31E24] mb-2">Kom in contact</div>
-          <h1 className="font-['Barlow_Condensed'] font-black text-5xl uppercase mb-4">Contact</h1>
+          <div className="font-['Barlow_Condensed'] text-[10px] font-bold uppercase tracking-[4px] text-[#E31E24] mb-2">Kom in contact</div>
+          <h1 className="font-['Barlow_Condensed'] font-black uppercase leading-none mb-4"
+            style={{ fontSize: 'clamp(3rem, 7vw, 6rem)' }}>
+            Contact
+          </h1>
           <p className="text-[#AAA] max-w-xl leading-relaxed">
-            Vraag? Interesse in een motor? Of gewoon even kennismaken? Jeffrey en Anouk reageren altijd snel.
+            Vraag? Interesse in een motor? Jeffrey en Anouk reageren altijd snel — meestal binnen een uur.
           </p>
         </div>
       </div>
 
+      {/* Contact info + service form */}
       <div className="max-w-6xl mx-auto px-4 py-12 grid grid-cols-1 lg:grid-cols-2 gap-12">
         <div>
-          <h2 className="font-['Barlow_Condensed'] font-bold text-3xl uppercase mb-6">Bereikbaarheid</h2>
+          <h2 className="font-['Barlow_Condensed'] font-black text-3xl uppercase mb-6">Bereikbaarheid</h2>
 
           <div className="space-y-3 mb-8">
             {[
@@ -73,29 +71,40 @@ export default function ContactPage() {
           </div>
         </div>
 
+        {/* Service aanvraag */}
         <div>
-          <h2 className="font-['Barlow_Condensed'] font-bold text-3xl uppercase mb-6">Stuur een bericht</h2>
-          {status === 'ok' ? (
-            <div className="border border-[#E5E5E5] p-8 text-center">
-              <div className="font-['Barlow_Condensed'] font-black text-2xl uppercase text-[#E31E24] mb-2">Bericht ontvangen!</div>
-              <p className="text-sm text-[#888]">Jeffrey of Anouk reageert binnen één werkdag.</p>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="bg-[#E31E24] p-2">
+              <Wrench size={18} className="text-white" />
             </div>
-          ) : (
-            <form onSubmit={submit} className="border border-[#E5E5E5] p-6 space-y-3">
-              <input required type="text" placeholder="Naam" value={form.naam} onChange={e => set('naam', e.target.value)}
-                className="w-full border border-[#E5E5E5] px-3 py-2.5 text-sm focus:outline-none focus:border-[#E31E24]" />
-              <input type="email" placeholder="E-mailadres" value={form.email} onChange={e => set('email', e.target.value)}
-                className="w-full border border-[#E5E5E5] px-3 py-2.5 text-sm focus:outline-none focus:border-[#E31E24]" />
-              <input type="tel" placeholder="Telefoonnummer" value={form.telefoon} onChange={e => set('telefoon', e.target.value)}
-                className="w-full border border-[#E5E5E5] px-3 py-2.5 text-sm focus:outline-none focus:border-[#E31E24]" />
-              <textarea required placeholder="Je bericht" value={form.bericht} onChange={e => set('bericht', e.target.value)} rows={5}
-                className="w-full border border-[#E5E5E5] px-3 py-2.5 text-sm focus:outline-none focus:border-[#E31E24] resize-none" />
-              <button type="submit"
-                className="w-full bg-[#E31E24] text-white font-['Barlow_Condensed'] font-bold uppercase tracking-wide py-3 hover:bg-[#c01920] transition-colors">
-                Verstuur bericht
-              </button>
-            </form>
-          )}
+            <h2 className="font-['Barlow_Condensed'] font-black text-3xl uppercase">Service aanvragen</h2>
+          </div>
+          <p className="text-sm text-[#666] leading-relaxed mb-5">
+            Nieuwe klant en je motor moet worden onderhouden of gerepareerd? Vul het formulier in en Jeffrey plant een afspraak met je in.
+          </p>
+          <div className="border border-[#E5E5E5] p-6">
+            <ServiceForm />
+          </div>
+          <p className="text-xs text-[#AAA] mt-3 text-center">
+            Bestaande klant? Maak je afspraak via de <strong>DJM app</strong>.
+          </p>
+        </div>
+      </div>
+
+      {/* Map placeholder */}
+      <div className="bg-[#F5F5F5] border-t border-[#E5E5E5] py-10 px-4">
+        <div className="max-w-6xl mx-auto text-center">
+          <div className="font-['Barlow_Condensed'] text-[10px] font-bold uppercase tracking-[4px] text-[#E31E24] mb-2">Hoe je ons vindt</div>
+          <p className="font-['Barlow_Condensed'] font-black text-2xl uppercase mb-1">Stevinweg 14 · Tholen</p>
+          <p className="text-sm text-[#888] mb-6">4691 SM Tholen, Zeeland</p>
+          <a
+            href="https://maps.google.com/?q=Stevinweg+14+4691+SM+Tholen"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 font-['Barlow_Condensed'] font-bold uppercase text-sm tracking-widest bg-[#E31E24] text-white px-6 py-3 hover:bg-[#c01920] transition-colors"
+          >
+            <MapPin size={14} /> Open in Google Maps
+          </a>
         </div>
       </div>
     </div>

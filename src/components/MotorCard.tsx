@@ -4,12 +4,12 @@ import { Bike, ArrowRight } from 'lucide-react';
 
 export default function MotorCard({ motor }: { motor: Motor }) {
   const nieuw = isNieuwBinnen(motor.datum_in);
+  const motorNaam = encodeURIComponent(`${motor.merk} ${motor.model} (${motor.bouwjaar})`);
 
   return (
-    <Link href={`/motor/${motor.id}`}
-      className="group relative block bg-[#0A0A0A] overflow-hidden cursor-pointer">
-      {/* Image */}
-      <div className="relative aspect-[4/3] bg-[#111] overflow-hidden">
+    <div className="group bg-white border border-[#E5E5E5] hover:border-[#E31E24] transition-colors overflow-hidden flex flex-col">
+      {/* Klikbaar foto gedeelte */}
+      <Link href={`/motor/${motor.id}`} className="relative aspect-[4/3] bg-[#111] overflow-hidden block">
         {motor.fotos?.[0] ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -18,13 +18,10 @@ export default function MotorCard({ motor }: { motor: Motor }) {
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <Bike size={48} className="text-[#333]" />
+          <div className="w-full h-full flex items-center justify-center bg-[#F5F5F5]">
+            <Bike size={48} className="text-[#DDD]" />
           </div>
         )}
-
-        {/* Dark overlay on hover */}
-        <div className="absolute inset-0 bg-[#0A0A0A]/0 group-hover:bg-[#0A0A0A]/40 transition-all duration-300" />
 
         {/* Badges */}
         <div className="absolute top-0 left-0 right-0 flex justify-between items-start p-3">
@@ -39,30 +36,37 @@ export default function MotorCard({ motor }: { motor: Motor }) {
             </span>
           )}
         </div>
-
-        {/* Hover CTA */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <span className="inline-flex items-center gap-2 bg-[#E31E24] text-white font-['Barlow_Condensed'] font-bold uppercase text-sm tracking-widest px-5 py-2.5 translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-            Bekijk motor <ArrowRight size={14} />
-          </span>
-        </div>
-      </div>
+      </Link>
 
       {/* Info */}
-      <div className="p-4 bg-white border-b-2 border-transparent group-hover:border-[#E31E24] transition-colors duration-300">
+      <div className="p-4 flex flex-col flex-1">
         <div className="text-[9px] font-['Barlow_Condensed'] font-bold uppercase tracking-[3px] text-[#E31E24] mb-1">
           {[motor.bouwjaar, motor.type].filter(Boolean).join(' · ')}
         </div>
-        <h3 className="font-['Barlow_Condensed'] font-black text-xl uppercase leading-tight text-[#0A0A0A] mb-3">
-          {motor.merk} {motor.model}
-        </h3>
-        <div className="flex justify-between items-end">
+        <Link href={`/motor/${motor.id}`}>
+          <h3 className="font-['Barlow_Condensed'] font-black text-xl uppercase leading-tight text-[#0A0A0A] mb-3 hover:text-[#E31E24] transition-colors">
+            {motor.merk} {motor.model}
+          </h3>
+        </Link>
+        <div className="flex justify-between items-end mb-4">
           <div className="text-[#999] text-xs font-['Barlow_Condensed'] uppercase tracking-wide">{formatKm(motor.km)}</div>
           <div className="font-['Barlow_Condensed'] font-black text-xl text-[#E31E24] leading-none">
             {formatPrijs(motor.prijs)}
           </div>
         </div>
+
+        {/* Knoppen */}
+        <div className="mt-auto flex gap-2">
+          <Link href={`/motor/${motor.id}`}
+            className="flex-1 text-center font-['Barlow_Condensed'] font-bold uppercase text-xs tracking-widest py-2.5 border border-[#E5E5E5] text-[#555] hover:border-[#1A1A1A] hover:text-[#1A1A1A] transition-colors">
+            Details
+          </Link>
+          <Link href={`/proefrit?motorId=${motor.id}&motorNaam=${motorNaam}`}
+            className="flex-1 text-center inline-flex items-center justify-center gap-1 font-['Barlow_Condensed'] font-bold uppercase text-xs tracking-widest py-2.5 bg-[#E31E24] text-white hover:bg-[#c01920] transition-colors">
+            Proefrit <ArrowRight size={11} />
+          </Link>
+        </div>
       </div>
-    </Link>
+    </div>
   );
 }
