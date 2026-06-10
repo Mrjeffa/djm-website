@@ -1,5 +1,6 @@
 import { Phone, Mail, MapPin, MessageCircle, Clock, Wrench } from 'lucide-react';
 import ServiceForm from '@/components/ServiceForm';
+import { getInstellingen, formatOpeningsTijden } from '@/lib/instellingen';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -7,7 +8,13 @@ export const metadata: Metadata = {
   description: 'Neem contact op met De Jonge Motoren in Tholen. Bel 0166-606090, stuur een WhatsApp of vraag online een servicebeurt aan.',
 };
 
-export default function ContactPage() {
+export const runtime = 'edge';
+export const revalidate = 60;
+
+export default async function ContactPage() {
+  const instellingen = await getInstellingen();
+  const tijden = formatOpeningsTijden(instellingen);
+
   return (
     <div>
       <div className="bg-[#0A0A0A] text-white py-16 px-4">
@@ -18,12 +25,19 @@ export default function ContactPage() {
             Contact
           </h1>
           <p className="text-[#AAA] max-w-xl leading-relaxed">
-            Vraag? Interesse in een motor? Jeffrey en Anouk reageren altijd snel — meestal binnen een uur.
+            Vraag? Interesse in een motor? Bel, mail of stuur een bericht — we reageren altijd snel.
           </p>
         </div>
       </div>
 
-      {/* Contact info + service form */}
+      {instellingen.opmerking && (
+        <div className="bg-[#E31E24]/10 border-b border-[#E31E24]/20 px-4 py-3">
+          <div className="max-w-6xl mx-auto text-sm text-[#E31E24] font-['Barlow_Condensed'] font-bold uppercase tracking-wide">
+            ℹ️ {instellingen.opmerking}
+          </div>
+        </div>
+      )}
+
       <div className="max-w-6xl mx-auto px-4 py-12 grid grid-cols-1 lg:grid-cols-2 gap-12">
         <div>
           <h2 className="font-['Barlow_Condensed'] font-black text-3xl uppercase mb-6">Bereikbaarheid</h2>
@@ -33,7 +47,7 @@ export default function ContactPage() {
               { icon: Phone, label: 'Telefoon', value: '0166-606090', href: 'tel:+31166606090' },
               { icon: Mail, label: 'E-mail', value: 'info@dejongemotoren.nl', href: 'mailto:info@dejongemotoren.nl' },
               { icon: MapPin, label: 'Adres', value: 'Stevinweg 14 · 4691 SM Tholen', href: 'https://maps.google.com/?q=Stevinweg+14+Tholen' },
-              { icon: MessageCircle, label: 'WhatsApp', value: 'Stuur een bericht', href: 'https://wa.me/31166606090' },
+              { icon: MessageCircle, label: 'WhatsApp', value: 'Stuur een bericht', href: 'https://wa.me/31612345678' },
             ].map(({ icon: Icon, label, value, href }) => (
               <div key={label} className="flex items-start gap-3 p-4 border border-[#E5E5E5]">
                 <div className="bg-[#E31E24]/10 p-2 shrink-0">
@@ -56,14 +70,12 @@ export default function ContactPage() {
               <div className="font-['Barlow_Condensed'] font-bold uppercase text-sm text-[#888]">Openingstijden</div>
             </div>
             <div className="space-y-2 text-sm text-[#555]">
-              <div className="flex justify-between">
-                <span className="font-medium text-[#1A1A1A]">Woensdag – Vrijdag</span>
-                <span>10:00 – 12:00 en 13:00 – 17:30</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Ma, di, za, zo</span>
-                <span className="text-[#888]">Op afspraak</span>
-              </div>
+              {tijden.map(({ label, waarde }) => (
+                <div key={label} className="flex justify-between gap-4">
+                  <span className={waarde === 'Gesloten' ? 'text-[#AAA]' : 'font-medium text-[#1A1A1A]'}>{label}</span>
+                  <span className={waarde === 'Gesloten' ? 'text-[#CCC]' : ''}>{waarde}</span>
+                </div>
+              ))}
             </div>
             <p className="text-xs text-[#888] mt-3 border-t border-[#E5E5E5] pt-3">
               Buiten openingstijden? Bel of WhatsApp ons — we zijn flexibel.
@@ -71,19 +83,18 @@ export default function ContactPage() {
           </div>
         </div>
 
-        {/* Service aanvraag */}
         <div>
-          <div className="flex items-center gap-3 mb-6">
+          <div className="flex items-center gap-3 mb-4">
             <div className="bg-[#E31E24] p-2">
               <Wrench size={18} className="text-white" />
             </div>
             <h2 className="font-['Barlow_Condensed'] font-black text-3xl uppercase">Service aanvragen</h2>
           </div>
           <p className="text-sm text-[#666] leading-relaxed mb-5">
-            Nieuwe klant en je motor moet worden onderhouden of gerepareerd? Vul het formulier in en Jeffrey plant een afspraak met je in.
+            Nieuwe klant en je motor moet worden onderhouden of gerepareerd? Vul het formulier in — we plannen een afspraak met je in.
           </p>
           <div className="border border-[#E5E5E5] p-6">
-            <ServiceForm />
+            <ServiceForm instellingen={instellingen} />
           </div>
           <p className="text-xs text-[#AAA] mt-3 text-center">
             Bestaande klant? Maak je afspraak via de <strong>DJM app</strong>.
@@ -91,7 +102,6 @@ export default function ContactPage() {
         </div>
       </div>
 
-      {/* Map placeholder */}
       <div className="bg-[#F5F5F5] border-t border-[#E5E5E5] py-10 px-4">
         <div className="max-w-6xl mx-auto text-center">
           <div className="font-['Barlow_Condensed'] text-[10px] font-bold uppercase tracking-[4px] text-[#E31E24] mb-2">Hoe je ons vindt</div>

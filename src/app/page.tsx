@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import { ArrowRight, CheckCircle } from 'lucide-react';
-import { getNieuweMotors, formatPrijs, formatKm } from '@/lib/motors';
+import { ArrowRight, CheckCircle, Smartphone, Wrench, TrendingUp, Bell } from 'lucide-react';
+import { getNieuweMotors } from '@/lib/motors';
 import MotorCard from '@/components/MotorCard';
 import InkoopForm from '@/components/InkoopForm';
 
@@ -14,14 +14,11 @@ export default async function HomePage() {
     <div>
       {/* 01 HERO */}
       <section className="relative min-h-screen bg-[#0A0A0A] flex items-end overflow-hidden">
-        {/* Background image */}
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: "url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&q=80')" }}
         />
-        {/* Dark gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-[#0A0A0A]/70 to-[#0A0A0A]/30" />
-        {/* Red accent line top */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-[#E31E24]" />
 
         <div className="relative z-10 w-full max-w-6xl mx-auto px-4 pb-16 pt-32">
@@ -36,7 +33,7 @@ export default async function HomePage() {
           </h1>
 
           <p className="text-[#AAA] text-lg max-w-lg mb-10 font-['Barlow'] leading-relaxed">
-            Occasion motors kopen, verkopen en proefrijden. Eerlijk geprijsd, persoonlijk advies van Jeffrey & Anouk.
+            Occasion motors kopen, verkopen en proefrijden. Eerlijk geprijsd, persoonlijk advies — zonder verkooppraatjes.
           </p>
 
           <div className="flex flex-wrap gap-4 mb-16">
@@ -51,7 +48,6 @@ export default async function HomePage() {
             </Link>
           </div>
 
-          {/* Stats bar */}
           <div className="border-t border-white/10 pt-8 grid grid-cols-3 gap-8 max-w-lg">
             {[
               { nr: '25+', label: 'Jaar ervaring' },
@@ -161,7 +157,7 @@ export default async function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
             {[
               { nr: '01', title: 'Kies je motor', desc: 'Bekijk het aanbod online of kom langs in Tholen. Filter op merk, type, prijs en km-stand.' },
-              { nr: '02', title: 'Vraag proefrit aan', desc: 'Serieuze interesse? Vraag een proefrit aan via de website of bel Jeffrey direct op 0166-606090.' },
+              { nr: '02', title: 'Vraag proefrit aan', desc: 'Serieuze interesse? Vraag een proefrit aan via de website of bel ons direct op 0166-606090.' },
               { nr: '03', title: 'Rij hem mee', desc: 'Eens over de prijs? Alle papieren worden geregeld. Jij rijdt dezelfde dag nog weg.' },
             ].map(({ nr, title, desc }) => (
               <div key={nr} className="relative">
@@ -176,7 +172,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 05 JEFFREY & ANOUK */}
+      {/* 05 OVER ONS */}
       <section className="py-20 px-4 bg-[#0A0A0A] text-white">
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -184,10 +180,10 @@ export default async function HomePage() {
               <div className="font-['Barlow_Condensed'] text-[10px] font-bold uppercase tracking-[4px] text-[#E31E24] mb-3">Wie zijn wij?</div>
               <h2 className="font-['Barlow_Condensed'] font-black uppercase leading-none mb-6"
                 style={{ fontSize: 'clamp(2.5rem, 5vw, 4.5rem)' }}>
-                Jeffrey<br />&amp; Anouk
+                De mensen<br />achter DJM
               </h2>
               <p className="text-[#AAA] leading-relaxed mb-6 max-w-lg">
-                Wij nemen De Jonge Motoren over — 25 jaar reputatie, dezelfde eerlijkheid. Geen verkooppraatjes, geen verstopte gebreken. Gewoon een goede motor, eerlijk advies, en een handdruk.
+                We nemen De Jonge Motoren over — 25 jaar reputatie, dezelfde eerlijkheid. Geen verkooppraatjes, geen verstopte gebreken. Gewoon een goede motor, eerlijk advies, en een handdruk.
               </p>
               <p className="text-[#666] text-sm leading-relaxed mb-8 max-w-lg">
                 Léon en Diana de Jonge bouwden dit bedrijf op met passie en integriteit. Die erfenis nemen wij serieus.
@@ -205,13 +201,12 @@ export default async function HomePage() {
               </Link>
             </div>
 
-            {/* Quote block */}
             <div className="border-l-4 border-[#E31E24] pl-8">
               <blockquote className="font-['Barlow_Condensed'] font-black text-white leading-tight mb-6"
                 style={{ fontSize: 'clamp(1.5rem, 3vw, 2.5rem)' }}>
                 &ldquo;Als wij een motor niet aan onze eigen familie zouden verkopen, verkopen wij hem niet.&rdquo;
               </blockquote>
-              <div className="font-['Barlow_Condensed'] font-bold text-[#E31E24] uppercase text-sm tracking-widest">Jeffrey & Anouk</div>
+              <div className="font-['Barlow_Condensed'] font-bold text-[#E31E24] uppercase text-sm tracking-widest">De eigenaren</div>
               <div className="text-[#555] text-xs uppercase tracking-widest mt-1">De Jonge Motoren · Tholen</div>
             </div>
           </div>
@@ -230,9 +225,9 @@ export default async function HomePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
-              { naam: 'Thomas V.', tekst: 'Super ervaring bij Jeffrey. Eerlijke prijs, geen druk en de motor was exact zoals beschreven. Aanrader!', rating: 5 },
-              { naam: 'Marloes de B.', tekst: 'Mijn eerste motor gekocht via DJM. Jeffrey nam de tijd om alles uit te leggen. Echt een fijne dealer.', rating: 5 },
-              { naam: 'Remco P.', tekst: 'Motor verkocht aan Jeffrey. Binnen een dag geregeld, eerlijke taxatie en direct betaald. Perfect.', rating: 5 },
+              { naam: 'Thomas V.', tekst: 'Super ervaring bij DJM. Eerlijke prijs, geen druk en de motor was exact zoals beschreven. Aanrader!', rating: 5 },
+              { naam: 'Marloes de B.', tekst: 'Mijn eerste motor gekocht via DJM. Het team nam de tijd om alles uit te leggen. Echt een fijne dealer.', rating: 5 },
+              { naam: 'Remco P.', tekst: 'Motor verkocht aan DJM. Binnen een dag geregeld, eerlijke taxatie en direct betaald. Perfect.', rating: 5 },
             ].map(({ naam, tekst, rating }) => (
               <div key={naam} className="bg-[#F8F8F8] p-8 border-t-4 border-[#E31E24]">
                 <div className="text-[#E31E24] text-lg mb-4 tracking-widest">{'★'.repeat(rating)}</div>
@@ -244,7 +239,65 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 07 INKOOP CTA */}
+      {/* 07 DE DJM APP */}
+      <section className="py-20 px-4 bg-[#0A0A0A]">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <div className="font-['Barlow_Condensed'] text-[10px] font-bold uppercase tracking-[4px] text-[#E31E24] mb-3">Voor klanten</div>
+              <h2 className="font-['Barlow_Condensed'] font-black text-white uppercase leading-none mb-6"
+                style={{ fontSize: 'clamp(2.5rem, 5vw, 4rem)' }}>
+                Alles over<br />jouw motor<br />
+                <span className="text-[#E31E24]">op één plek.</span>
+              </h2>
+              <p className="text-[#AAA] leading-relaxed mb-8 max-w-lg">
+                De DJM app is jouw persoonlijk onderhoudsdossier. Beheer je motor, houd de km-stand bij, plan een servicebeurt en zie wanneer je banden of ketting aan vervanging toe zijn — alles op je telefoon.
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+                {[
+                  { icon: Wrench, title: 'Onderhoud bijhouden', desc: 'Servicehistorie altijd bij de hand' },
+                  { icon: TrendingUp, title: 'Km-stand registreren', desc: 'Grafiek van jouw rijgedrag' },
+                  { icon: Bell, title: 'Slimme meldingen', desc: 'Nooit meer een beurt missen' },
+                  { icon: Smartphone, title: 'Afspraken inplannen', desc: 'Serviceafspraak in 30 seconden' },
+                ].map(({ icon: Icon, title, desc }) => (
+                  <div key={title} className="flex gap-3 items-start">
+                    <div className="bg-[#E31E24]/10 p-2 shrink-0 mt-0.5">
+                      <Icon size={16} className="text-[#E31E24]" />
+                    </div>
+                    <div>
+                      <div className="font-['Barlow_Condensed'] font-bold text-white uppercase text-sm">{title}</div>
+                      <div className="text-[#555] text-xs mt-0.5">{desc}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <p className="text-[#666] text-xs">Beschikbaar voor bestaande klanten van De Jonge Motoren.</p>
+            </div>
+
+            <div className="flex items-center justify-center">
+              <div className="relative">
+                <div className="w-56 h-96 bg-[#111] border-2 border-[#222] rounded-[2.5rem] flex flex-col items-center justify-center shadow-2xl">
+                  <div className="w-12 h-1.5 bg-[#333] rounded-full mb-8" />
+                  <div className="w-10 h-10 bg-[#E31E24] rounded-2xl flex items-center justify-center mb-4">
+                    <Smartphone size={22} className="text-white" />
+                  </div>
+                  <div className="font-['Barlow_Condensed'] font-black text-white text-lg uppercase tracking-widest mb-1">DJM</div>
+                  <div className="font-['Barlow_Condensed'] text-[#555] text-xs uppercase tracking-[3px]">Motor app</div>
+                  <div className="mt-8 w-32 h-1 bg-[#222] rounded-full" />
+                  <div className="mt-2 w-24 h-1 bg-[#1A1A1A] rounded-full" />
+                  <div className="mt-2 w-20 h-1 bg-[#1A1A1A] rounded-full" />
+                  <div className="mt-6 w-8 h-8 bg-[#222] rounded-full" />
+                </div>
+                <div className="absolute -top-3 -right-3 bg-[#E31E24] text-white text-xs font-['Barlow_Condensed'] font-bold uppercase px-3 py-1 rounded">
+                  Klanten app
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 08 INKOOP CTA */}
       <section className="py-20 px-4 bg-[#E31E24]">
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="text-white">

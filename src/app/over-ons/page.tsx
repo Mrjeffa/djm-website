@@ -10,12 +10,15 @@ export const metadata: Metadata = {
 export default function OverOnsPage() {
   return (
     <div>
-      <div className="bg-[#1A1A1A] text-white py-16 px-4">
+      <div className="bg-[#0A0A0A] text-white py-16 px-4">
         <div className="max-w-6xl mx-auto">
-          <div className="font-['Barlow_Condensed'] text-[10px] font-bold uppercase tracking-[3px] text-[#E31E24] mb-2">De mensen achter DJM</div>
-          <h1 className="font-['Barlow_Condensed'] font-black text-5xl uppercase mb-4">Over ons</h1>
+          <div className="font-['Barlow_Condensed'] text-[10px] font-bold uppercase tracking-[4px] text-[#E31E24] mb-2">De mensen achter DJM</div>
+          <h1 className="font-['Barlow_Condensed'] font-black uppercase leading-none mb-4"
+            style={{ fontSize: 'clamp(3rem, 7vw, 6rem)' }}>
+            Over ons
+          </h1>
           <p className="text-[#AAA] max-w-xl leading-relaxed">
-            Een nieuw hoofdstuk voor een vertrouwd adres. Jeffrey en Anouk nemen het stokje over van Léon en Diana.
+            Een nieuw hoofdstuk voor een vertrouwd adres. Wij nemen het stokje over van Léon en Diana — met dezelfde eerlijkheid.
           </p>
         </div>
       </div>

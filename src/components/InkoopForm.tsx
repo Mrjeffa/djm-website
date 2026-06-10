@@ -31,7 +31,7 @@ export default function InkoopForm() {
     return (
       <div className="bg-white/10 border border-white/30 p-6 text-center text-white">
         <div className="font-['Barlow_Condensed'] font-black text-2xl uppercase mb-2">Aanvraag ontvangen!</div>
-        <p className="text-white/80 text-sm">Jeffrey of Anouk neemt zo snel mogelijk contact op voor een eerlijke taxatie.</p>
+        <p className="text-white/80 text-sm">We nemen zo snel mogelijk contact op voor een eerlijke taxatie.</p>
       </div>
     );
   }

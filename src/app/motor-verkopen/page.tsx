@@ -10,10 +10,13 @@ export const metadata: Metadata = {
 export default function MotorVerkopenPage() {
   return (
     <div>
-      <div className="bg-[#1A1A1A] text-white py-16 px-4">
+      <div className="bg-[#0A0A0A] text-white py-16 px-4">
         <div className="max-w-6xl mx-auto">
-          <div className="font-['Barlow_Condensed'] text-[10px] font-bold uppercase tracking-[3px] text-[#E31E24] mb-2">Vrijblijvend</div>
-          <h1 className="font-['Barlow_Condensed'] font-black text-5xl uppercase mb-4">Motor verkopen</h1>
+          <div className="font-['Barlow_Condensed'] text-[10px] font-bold uppercase tracking-[4px] text-[#E31E24] mb-2">Vrijblijvend</div>
+          <h1 className="font-['Barlow_Condensed'] font-black uppercase leading-none mb-4"
+            style={{ fontSize: 'clamp(3rem, 7vw, 6rem)' }}>
+            Motor verkopen
+          </h1>
           <p className="text-[#AAA] max-w-xl leading-relaxed">
             Wij kopen jouw motor. Geen gedoe, geen tussenpersonen. Eerlijke taxatie, directe betaling.
           </p>
@@ -22,11 +25,11 @@ export default function MotorVerkopenPage() {
 
       <div className="max-w-6xl mx-auto px-4 py-12 grid grid-cols-1 lg:grid-cols-2 gap-12">
         <div>
-          <h2 className="font-['Barlow_Condensed'] font-bold text-3xl uppercase mb-6">Hoe werkt het?</h2>
+          <h2 className="font-['Barlow_Condensed'] font-black text-3xl uppercase mb-6">Hoe werkt het?</h2>
           <div className="space-y-6">
             {[
               { nr: '01', title: 'Vul het formulier in', desc: 'Naam, telefoonnummer, merk/model en km-stand. Dat is alles wat we nodig hebben.' },
-              { nr: '02', title: 'Jeffrey belt je terug', desc: 'Binnen één werkdag. Eerlijk gesprek, geen verkooppraat.' },
+              { nr: '02', title: 'We bellen je terug', desc: 'Binnen één werkdag. Eerlijk gesprek, geen verkooppraat.' },
               { nr: '03', title: 'Taxatie op locatie', desc: 'We komen naar jou toe of jij komt langs in Tholen. We beoordelen de motor samen.' },
               { nr: '04', title: 'Directe betaling', desc: 'Akkoord? Betaling dezelfde dag. Motor van de hand, geld op de rekening.' },
             ].map(({ nr, title, desc }) => (
@@ -56,7 +59,7 @@ export default function MotorVerkopenPage() {
         </div>
 
         <div>
-          <h2 className="font-['Barlow_Condensed'] font-bold text-3xl uppercase mb-6">Taxatie aanvragen</h2>
+          <h2 className="font-['Barlow_Condensed'] font-black text-3xl uppercase mb-6">Taxatie aanvragen</h2>
           <div className="bg-[#E31E24] p-6">
             <InkoopForm />
           </div>

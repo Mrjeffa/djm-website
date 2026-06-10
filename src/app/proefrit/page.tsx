@@ -1,5 +1,6 @@
 import ProefritForm from '@/components/ProefritForm';
 import { getMotors } from '@/lib/motors';
+import { getInstellingen } from '@/lib/instellingen';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -15,8 +16,11 @@ export default async function ProefritPage({
 }: {
   searchParams: Promise<{ motorId?: string; motorNaam?: string }>;
 }) {
-  const params = await searchParams;
-  const motoren = await getMotors();
+  const [params, motoren, instellingen] = await Promise.all([
+    searchParams,
+    getMotors(),
+    getInstellingen(),
+  ]);
 
   return (
     <div>
@@ -37,8 +41,8 @@ export default async function ProefritPage({
         <div>
           <h2 className="font-['Barlow_Condensed'] font-black text-3xl uppercase mb-6">Wat kun je verwachten?</h2>
           <div className="space-y-4 text-sm text-[#555] leading-relaxed">
-            <p>Je vraagt een proefrit aan via het formulier hiernaast. Jeffrey belt je zo snel mogelijk terug om een moment af te spreken dat jou uitkomt.</p>
-            <p>Je komt langs in Tholen. Je rijdt de motor — op jouw tempo, zonder haast. Jeffrey is er als je vragen hebt, maar er is geen druk.</p>
+            <p>Je vraagt een proefrit aan via het formulier hiernaast. We bellen je zo snel mogelijk terug om een moment af te spreken dat jou uitkomt.</p>
+            <p>Je komt langs in Tholen. Je rijdt de motor — op jouw tempo, zonder haast. Er is geen druk om te kopen.</p>
             <p>Bevalt hij? Dan praten we over de prijs. Niet? Dan ga je gewoon weer naar huis. Zo simpel is het.</p>
           </div>
 
@@ -56,7 +60,7 @@ export default async function ProefritPage({
           <div className="mt-6 bg-[#E31E24]/5 border border-[#E31E24]/20 p-5">
             <p className="text-sm text-[#444] leading-relaxed">
               <strong className="text-[#E31E24] font-['Barlow_Condensed'] uppercase text-xs tracking-widest block mb-2">Liever direct bellen?</strong>
-              Bel Jeffrey op <a href="tel:+31166606090" className="font-bold text-[#1A1A1A] hover:text-[#E31E24] transition-colors">0166-606090</a> — dan plannen we meteen iets in.
+              Bel ons op <a href="tel:+31166606090" className="font-bold text-[#1A1A1A] hover:text-[#E31E24] transition-colors">0166-606090</a> — dan plannen we meteen iets in.
             </p>
           </div>
         </div>
@@ -68,6 +72,7 @@ export default async function ProefritPage({
               motorId={params.motorId}
               motorNaam={params.motorNaam}
               motoren={motoren}
+              instellingen={instellingen}
             />
           </div>
         </div>

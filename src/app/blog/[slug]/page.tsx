@@ -31,7 +31,7 @@ Kleiner en lichter. Perfecte stadsmachine. Minder geschikt voor lange ritten, ma
 - **Servicehistorie:** vraag altijd naar de stempels in het boekje
 - **A2-geschikt:** check altijd of de motor in originele A2-staat is, of correct beperkt is
 
-## Advies van Jeffrey
+## Ons advies
 
 Kies geen motor omdat hij mooi is. Kies een motor die bij je rijstijl past. Ga je elke dag naar je werk? Neem een naked bike. Wil je weekenden op de hei? Dan is een adventure meer jouw ding. En kom gewoon langs voor een proefrit — je weet het pas als je rijdt.
     `.trim(),
@@ -179,7 +179,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
       <div className="mt-12 bg-[#F5F5F5] border-l-4 border-[#E31E24] p-6">
         <div className="font-['Barlow_Condensed'] font-bold uppercase mb-2">Interesse in een motor?</div>
-        <p className="text-sm text-[#888] mb-4">Bekijk het actuele aanbod of neem direct contact op met Jeffrey.</p>
+        <p className="text-sm text-[#888] mb-4">Bekijk het actuele aanbod of neem direct contact op.</p>
         <Link href="/aanbod" className="inline-flex items-center gap-1 bg-[#E31E24] text-white font-['Barlow_Condensed'] font-bold uppercase px-5 py-2.5 text-sm hover:bg-[#c01920] transition-colors">
           Bekijk aanbod
         </Link>
