@@ -1,6 +1,22 @@
 import { createClient } from '@supabase/supabase-js';
-export type { Motor } from './supabase';
-import type { Motor } from './supabase';
+
+export type Motor = {
+  id: string;
+  merk: string;
+  model: string;
+  bouwjaar: number;
+  km: number;
+  prijs: number;
+  type: string | null;
+  vermogen: string | null;
+  kleur: string | null;
+  beschrijving: string | null;
+  kenteken: string;
+  fotos: string[];
+  status: string;
+  datum_in: string | null;
+  created_at: string;
+};
 
 function getClient() {
   return createClient(
@@ -9,137 +25,86 @@ function getClient() {
   );
 }
 
-export async function getMotors(filters?: {
-  merk?: string;
-  type?: string;
-  maxPrijs?: number;
-  maxKm?: number;
-}): Promise<Motor[]> {
-  const supabase = getClient();
-  let query = supabase
-    .from('motors')
-    .select('*')
-    .eq('status', 'beschikbaar')
-    .order('created_at', { ascending: false });
-
-  if (filters?.merk) query = query.eq('merk', filters.merk);
-  if (filters?.type) query = query.eq('type', filters.type);
-  if (filters?.maxPrijs) query = query.lte('prijs', filters.maxPrijs);
-  if (filters?.maxKm) query = query.lte('km', filters.maxKm);
-
-  const { data, error } = await query;
-  if (error) return mockMotors.filter(m => {
-    if (filters?.merk && m.merk !== filters.merk) return false;
-    if (filters?.type && m.type !== filters.type) return false;
-    if (filters?.maxPrijs && m.prijs > filters.maxPrijs) return false;
-    if (filters?.maxKm && m.km > filters.maxKm) return false;
-    return true;
-  });
-  return data || mockMotors;
-}
-
-export async function getMotorBySlug(slug: string): Promise<Motor | null> {
-  const supabase = getClient();
-  const { data, error } = await supabase
-    .from('motors')
-    .select('*')
-    .eq('slug', slug)
-    .single();
-
-  if (error) return mockMotors.find(m => m.slug === slug) || null;
-  return data;
-}
-
-export async function getNieuweMotors(limit = 4): Promise<Motor[]> {
-  const supabase = getClient();
-  const { data, error } = await supabase
-    .from('motors')
-    .select('*')
-    .eq('status', 'beschikbaar')
-    .order('created_at', { ascending: false })
-    .limit(limit);
-
-  if (error) return mockMotors.slice(0, limit);
-  return data || mockMotors.slice(0, limit);
-}
-
-export function isNieuwBinnen(createdAt: string): boolean {
-  const diff = Date.now() - new Date(createdAt).getTime();
-  return diff < 14 * 24 * 60 * 60 * 1000;
-}
-
 export function formatPrijs(prijs: number): string {
-  return new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(prijs);
+  return new Intl.NumberFormat('nl-NL', {
+    style: 'currency',
+    currency: 'EUR',
+    maximumFractionDigits: 0,
+  }).format(prijs);
 }
 
 export function formatKm(km: number): string {
   return new Intl.NumberFormat('nl-NL').format(km) + ' km';
 }
 
-export const mockMotors: Motor[] = [
-  {
-    id: '1',
-    slug: 'honda-cb500f-2021',
-    merk: 'Honda',
-    model: 'CB500F',
-    bouwjaar: 2021,
-    km: 8200,
-    prijs: 5950,
-    type: 'Naked',
-    kleur: 'Mat Gunpowder Black',
-    vermogen: '35 kW (A2)',
-    kenteken: 'XX-123-Y',
-    beschrijving: 'Mooie Honda CB500F in topstaat. Rijdt uitstekend, geen schade. Inclusief originele sleutels en boekjes. A2-rijbewijs geschikt.',
-    fotos: [],
-    status: 'beschikbaar',
-    created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: '2',
-    slug: 'kawasaki-z650-2020',
-    merk: 'Kawasaki',
-    model: 'Z650',
-    bouwjaar: 2020,
-    km: 14500,
-    prijs: 6750,
-    type: 'Naked',
-    kleur: 'Candy Lime Green',
-    vermogen: '50 kW',
-    beschrijving: 'Kawasaki Z650 in uitstekende staat. Regelmatig onderhouden, alle stempels aanwezig.',
-    fotos: [],
-    status: 'beschikbaar',
-    created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: '3',
-    slug: 'yamaha-mt07-2019',
-    merk: 'Yamaha',
-    model: 'MT-07',
-    bouwjaar: 2019,
-    km: 21000,
-    prijs: 7250,
-    type: 'Naked',
-    kleur: 'Tech Black',
-    vermogen: '55 kW',
-    beschrijving: 'Yamaha MT-07 — de favoriet van velen. Krachtig, betrouwbaar en geweldig rijdend. Geen schade, netjes onderhouden.',
-    fotos: [],
-    status: 'beschikbaar',
-    created_at: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: '4',
-    slug: 'bmw-f800r-2018',
-    merk: 'BMW',
-    model: 'F800R',
-    bouwjaar: 2018,
-    km: 28000,
-    prijs: 7900,
-    type: 'Naked',
-    kleur: 'Alpine White',
-    vermogen: '61 kW',
-    beschrijving: 'BMW F800R in nette staat. BMW-servicehistorie aanwezig. Comfortabele motor voor zowel stad als snelweg.',
-    fotos: [],
-    status: 'beschikbaar',
-    created_at: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-];
+export function isNieuwBinnen(datum_in: string | null): boolean {
+  if (!datum_in) return false;
+  const days = (Date.now() - new Date(datum_in).getTime()) / (1000 * 60 * 60 * 24);
+  return days <= 14;
+}
+
+function normalize(row: Record<string, unknown>): Motor {
+  return {
+    id: row.id as string,
+    merk: row.merk as string,
+    model: (row.model as string) ?? '',
+    bouwjaar: (row.bouwjaar as number) ?? 0,
+    km: (row.km as number) ?? 0,
+    prijs: (row.prijs as number) ?? 0,
+    type: (row.type as string | null) ?? null,
+    vermogen: (row.vermogen as string | null) ?? null,
+    kleur: (row.kleur as string | null) ?? null,
+    beschrijving: (row.beschrijving as string | null) ?? null,
+    kenteken: (row.kenteken as string) ?? '',
+    fotos: Array.isArray(row.fotos) ? (row.fotos as string[]) : [],
+    status: (row.status as string) ?? 'beschikbaar',
+    datum_in: (row.datum_in as string | null) ?? null,
+    created_at: (row.created_at as string) ?? '',
+  };
+}
+
+export async function getMotors(filters?: {
+  merk?: string;
+  type?: string;
+  maxPrijs?: number;
+  maxKm?: number;
+}): Promise<Motor[]> {
+  const client = getClient();
+  let query = client
+    .from('voorraad')
+    .select('*')
+    .in('status', ['beschikbaar', 'gereserveerd'])
+    .order('datum_in', { ascending: false });
+
+  if (filters?.merk) query = query.ilike('merk', filters.merk);
+  if (filters?.type) query = query.ilike('type', filters.type);
+  if (filters?.maxPrijs) query = query.lte('prijs', filters.maxPrijs);
+  if (filters?.maxKm) query = query.lte('km', filters.maxKm);
+
+  const { data } = await query;
+  return (data ?? []).map(normalize);
+}
+
+export async function getMotorById(id: string): Promise<Motor | null> {
+  const client = getClient();
+  const { data } = await client
+    .from('voorraad')
+    .select('*')
+    .eq('id', id)
+    .maybeSingle();
+  return data ? normalize(data) : null;
+}
+
+// Alias so existing imports still work
+export const getMotorBySlug = getMotorById;
+
+export async function getNieuweMotors(limit = 4): Promise<Motor[]> {
+  const client = getClient();
+  const { data } = await client
+    .from('voorraad')
+    .select('*')
+    .in('status', ['beschikbaar', 'gereserveerd'])
+    .order('datum_in', { ascending: false })
+    .limit(limit);
+  return (data ?? []).map(normalize);
+}

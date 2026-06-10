@@ -3,10 +3,10 @@ import { Motor, formatPrijs, formatKm, isNieuwBinnen } from '@/lib/motors';
 import { Bike } from 'lucide-react';
 
 export default function MotorCard({ motor }: { motor: Motor }) {
-  const nieuw = isNieuwBinnen(motor.created_at);
+  const nieuw = isNieuwBinnen(motor.datum_in);
 
   return (
-    <Link href={`/motor/${motor.slug}`} className="group block bg-white border border-[#E5E5E5] hover:border-[#E31E24] transition-colors rounded-none overflow-hidden">
+    <Link href={`/motor/${motor.id}`} className="group block bg-white border border-[#E5E5E5] hover:border-[#E31E24] transition-colors overflow-hidden">
       <div className="relative aspect-[4/3] bg-[#F5F5F5] flex items-center justify-center overflow-hidden">
         {motor.fotos?.[0] ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -23,16 +23,16 @@ export default function MotorCard({ motor }: { motor: Motor }) {
             Nieuw binnen
           </span>
         )}
-        {motor.status === 'verkocht' && (
-          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-            <span className="font-['Barlow_Condensed'] font-black text-white text-2xl uppercase tracking-widest">Verkocht</span>
+        {motor.status === 'gereserveerd' && (
+          <div className="absolute top-3 right-3 bg-[#F59E0B] text-white text-[10px] font-['Barlow_Condensed'] font-bold uppercase tracking-widest px-2 py-1">
+            Gereserveerd
           </div>
         )}
       </div>
 
       <div className="p-4">
         <div className="text-[10px] font-['Barlow_Condensed'] font-bold uppercase tracking-widest text-[#E31E24] mb-1">
-          {motor.bouwjaar} · {motor.type}
+          {motor.bouwjaar}{motor.type ? ` · ${motor.type}` : ''}
         </div>
         <h3 className="font-['Barlow_Condensed'] font-bold text-xl uppercase leading-tight mb-3">
           {motor.merk} {motor.model}

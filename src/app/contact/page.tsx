@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Phone, Mail, MapPin, MessageCircle } from 'lucide-react';
+import { Phone, Mail, MapPin, MessageCircle, Clock } from 'lucide-react';
 
 export default function ContactPage() {
   const [form, setForm] = useState({ naam: '', email: '', telefoon: '', bericht: '' });
@@ -21,7 +21,7 @@ export default function ContactPage() {
           <div className="font-['Barlow_Condensed'] text-[10px] font-bold uppercase tracking-[3px] text-[#E31E24] mb-2">Kom in contact</div>
           <h1 className="font-['Barlow_Condensed'] font-black text-5xl uppercase mb-4">Contact</h1>
           <p className="text-[#AAA] max-w-xl leading-relaxed">
-            Vraag? Interesse in een motor? Of gewoon even kennismaken? Jeffrey reageert altijd snel.
+            Vraag? Interesse in een motor? Of gewoon even kennismaken? Jeffrey en Anouk reageren altijd snel.
           </p>
         </div>
       </div>
@@ -30,12 +30,12 @@ export default function ContactPage() {
         <div>
           <h2 className="font-['Barlow_Condensed'] font-bold text-3xl uppercase mb-6">Bereikbaarheid</h2>
 
-          <div className="space-y-4 mb-8">
+          <div className="space-y-3 mb-8">
             {[
-              { icon: Phone, label: 'Telefoon', value: '06-1234 5678', href: 'tel:+31612345678' },
+              { icon: Phone, label: 'Telefoon', value: '0166-606090', href: 'tel:+31166606090' },
               { icon: Mail, label: 'E-mail', value: 'info@dejongemotoren.nl', href: 'mailto:info@dejongemotoren.nl' },
-              { icon: MapPin, label: 'Locatie', value: 'Tholen, Zeeland', href: undefined },
-              { icon: MessageCircle, label: 'WhatsApp', value: 'Stuur een bericht', href: 'https://wa.me/31612345678' },
+              { icon: MapPin, label: 'Adres', value: 'Stevinweg 14 · 4691 SM Tholen', href: 'https://maps.google.com/?q=Stevinweg+14+Tholen' },
+              { icon: MessageCircle, label: 'WhatsApp', value: 'Stuur een bericht', href: 'https://wa.me/31166606090' },
             ].map(({ icon: Icon, label, value, href }) => (
               <div key={label} className="flex items-start gap-3 p-4 border border-[#E5E5E5]">
                 <div className="bg-[#E31E24]/10 p-2 shrink-0">
@@ -43,23 +43,33 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <div className="text-xs text-[#888] font-['Barlow_Condensed'] uppercase tracking-wide mb-0.5">{label}</div>
-                  {href ? (
-                    <a href={href} className="font-['Barlow_Condensed'] font-bold hover:text-[#E31E24] transition-colors">{value}</a>
-                  ) : (
-                    <div className="font-['Barlow_Condensed'] font-bold">{value}</div>
-                  )}
+                  <a href={href} target={href.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer"
+                    className="font-['Barlow_Condensed'] font-bold hover:text-[#E31E24] transition-colors">
+                    {value}
+                  </a>
                 </div>
               </div>
             ))}
           </div>
 
           <div className="bg-[#F5F5F5] p-5 border border-[#E5E5E5]">
-            <div className="font-['Barlow_Condensed'] font-bold uppercase text-sm mb-3 text-[#888]">Openingstijden</div>
-            <div className="space-y-1 text-sm text-[#555]">
-              <div className="flex justify-between"><span>Maandag – vrijdag</span><span className="font-medium">09:00 – 18:00</span></div>
-              <div className="flex justify-between"><span>Zaterdag</span><span className="font-medium">10:00 – 16:00</span></div>
-              <div className="flex justify-between"><span>Zondag</span><span className="text-[#888]">Op afspraak</span></div>
+            <div className="flex items-center gap-2 mb-3">
+              <Clock size={14} className="text-[#E31E24]" />
+              <div className="font-['Barlow_Condensed'] font-bold uppercase text-sm text-[#888]">Openingstijden</div>
             </div>
+            <div className="space-y-2 text-sm text-[#555]">
+              <div className="flex justify-between">
+                <span className="font-medium text-[#1A1A1A]">Woensdag – Vrijdag</span>
+                <span>10:00 – 12:00 en 13:00 – 17:30</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Ma, di, za, zo</span>
+                <span className="text-[#888]">Op afspraak</span>
+              </div>
+            </div>
+            <p className="text-xs text-[#888] mt-3 border-t border-[#E5E5E5] pt-3">
+              Buiten openingstijden? Bel of WhatsApp ons — we zijn flexibel.
+            </p>
           </div>
         </div>
 
@@ -68,7 +78,7 @@ export default function ContactPage() {
           {status === 'ok' ? (
             <div className="border border-[#E5E5E5] p-8 text-center">
               <div className="font-['Barlow_Condensed'] font-black text-2xl uppercase text-[#E31E24] mb-2">Bericht ontvangen!</div>
-              <p className="text-sm text-[#888]">Jeffrey reageert binnen één werkdag.</p>
+              <p className="text-sm text-[#888]">Jeffrey of Anouk reageert binnen één werkdag.</p>
             </div>
           ) : (
             <form onSubmit={submit} className="border border-[#E5E5E5] p-6 space-y-3">

@@ -3,12 +3,12 @@ export const runtime = 'edge';
 import { getMotors } from '@/lib/motors';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = 'https://djm-website.pages.dev';
+  const base = 'https://www.dejongemotoren.nl';
 
   const motors = await getMotors();
   const motorUrls = motors.map(m => ({
-    url: `${base}/motor/${m.slug}`,
-    lastModified: new Date(m.created_at),
+    url: `${base}/motor/${m.id}`,
+    lastModified: new Date(m.datum_in ?? m.created_at),
     changeFrequency: 'weekly' as const,
     priority: 0.8,
   }));

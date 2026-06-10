@@ -20,7 +20,7 @@ export default function Header() {
     <header className="sticky top-0 z-50 bg-white border-b border-[#1E1E1E]">
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
         <Link href="/" className="flex flex-col leading-none">
-          <span className="font-['Barlow_Condensed'] text-[10px] font-bold tracking-[3px] text-[#E31E24] uppercase">Occasion Motors</span>
+          <span className="font-['Barlow_Condensed'] text-[10px] font-bold tracking-[3px] text-[#E31E24] uppercase">Occasion Motors · Tholen</span>
           <span className="font-['Barlow_Condensed'] text-xl font-black uppercase tracking-tight">De Jonge Motoren</span>
         </Link>
 
@@ -37,11 +37,11 @@ export default function Header() {
         </nav>
 
         <a
-          href="tel:+31612345678"
+          href="tel:+31166606090"
           className="hidden md:flex items-center gap-2 bg-[#E31E24] text-white px-4 py-2 font-['Barlow_Condensed'] font-bold text-sm uppercase tracking-wide hover:bg-[#c01920] transition-colors"
         >
           <Phone size={14} />
-          06-1234 5678
+          0166-606090
         </a>
 
         <button
@@ -67,11 +67,11 @@ export default function Header() {
               </Link>
             ))}
             <a
-              href="tel:+31612345678"
+              href="tel:+31166606090"
               className="flex items-center gap-2 px-4 py-3 font-['Barlow_Condensed'] font-bold text-[#E31E24] uppercase"
             >
               <Phone size={14} />
-              06-1234 5678
+              0166-606090
             </a>
           </nav>
         </div>

@@ -144,13 +144,13 @@ export default async function HomePage() {
       <section className="py-16 px-4 bg-[#1A1A1A] text-white">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-10 items-center">
           <div className="w-48 h-48 rounded-full bg-[#2A2A2A] border-4 border-[#E31E24] flex-shrink-0 overflow-hidden flex items-center justify-center">
-            <span className="font-['Barlow_Condensed'] font-black text-5xl text-[#E31E24]">J</span>
+            <span className="font-['Barlow_Condensed'] font-black text-4xl text-[#E31E24]">J&A</span>
           </div>
           <div>
-            <div className="font-['Barlow_Condensed'] text-[10px] font-bold uppercase tracking-[3px] text-[#E31E24] mb-2">De mens achter DJM</div>
-            <h2 className="font-['Barlow_Condensed'] font-black text-4xl uppercase mb-4">Ik ben Jeffrey.</h2>
+            <div className="font-['Barlow_Condensed'] text-[10px] font-bold uppercase tracking-[3px] text-[#E31E24] mb-2">De nieuwe eigenaren</div>
+            <h2 className="font-['Barlow_Condensed'] font-black text-4xl uppercase mb-4">Jeffrey & Anouk</h2>
             <p className="text-[#AAA] leading-relaxed max-w-xl mb-6">
-              Ik koop en verkoop motoren omdat ik er oprecht van hou. Geen groot bedrijf, geen verkooppraatjes. Gewoon eerlijk advies, een goede motor en een handdruk. Als ik een motor niet aan mijn eigen vader zou verkopen, verkoop ik hem niet.
+              Wij nemen De Jonge Motoren over — 25 jaar reputatie, dezelfde eerlijkheid. Geen verkooppraatjes, geen verstopte gebreken. Gewoon een goede motor en een handdruk. Als wij hem niet aan onze eigen familie zouden verkopen, verkopen wij hem niet.
             </p>
             <div className="flex flex-wrap gap-4 mb-6">
               {['Eerlijk', 'Persoonlijk', 'Transparant'].map(w => (
