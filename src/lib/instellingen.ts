@@ -1,4 +1,5 @@
 import { createClient } from '@/utils/supabase/server';
+import { cookies } from 'next/headers';
 
 export type DagCode = 'ma' | 'di' | 'wo' | 'do' | 'vr' | 'za' | 'zo';
 
@@ -44,7 +45,8 @@ const FALLBACK: Instellingen = {
 
 export async function getInstellingen(): Promise<Instellingen> {
   try {
-    const supabase = await createClient();
+    const cookieStore = await cookies();
+    const supabase = createClient(cookieStore);
     const { data } = await supabase
       .from('instellingen')
       .select('openingstijden, gesloten_dagen, gesloten_weken, max_afspraken_per_dag, opmerking')
