@@ -16,13 +16,13 @@ export default function InkoopForm() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setStatus('loading');
-    const { error } = await supabase.from('inkoop_leads').insert({
-      naam: form.naam,
-      telefoon: form.telefoon,
-      merk: form.merk || null,
-      model: form.model || null,
-      bouwjaar: form.bouwjaar ? parseInt(form.bouwjaar) : null,
-      km: form.km ? parseInt(form.km) : null,
+    const { error } = await supabase.rpc('maak_inkoop_lead', {
+      p_naam: form.naam,
+      p_telefoon: form.telefoon,
+      p_merk: form.merk || null,
+      p_model: form.model || null,
+      p_bouwjaar: form.bouwjaar ? parseInt(form.bouwjaar) : null,
+      p_km: form.km ? parseInt(form.km) : null,
     });
     setStatus(error ? 'err' : 'ok');
   }
