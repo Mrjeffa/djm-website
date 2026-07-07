@@ -65,14 +65,15 @@ export default function ServiceForm({ instellingen }: Props) {
     e.preventDefault();
     if (datumFout) return;
     setStatus('loading');
-    const { error } = await supabase.from('afspraken').insert({
-      naam: form.naam,
-      telefoon: form.telefoon,
-      email: form.email || null,
-      datum: form.datum || new Date().toISOString().split('T')[0],
-      type: 'service',
-      status: 'aangevraagd',
-      opmerking: [form.soort && `Soort: ${form.soort}`, form.opmerking].filter(Boolean).join(' — ') || null,
+    const { error } = await supabase.rpc('maak_afspraak', {
+      p_naam: form.naam,
+      p_telefoon: form.telefoon,
+      p_email: form.email || null,
+      p_datum: form.datum || new Date().toISOString().split('T')[0],
+      p_type: 'service',
+      p_soort: form.soort || 'Service',
+      p_voorraad_motor_id: null,
+      p_opmerking: form.opmerking || null,
     });
     setStatus(error ? 'err' : 'ok');
   }

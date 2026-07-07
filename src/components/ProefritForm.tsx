@@ -63,15 +63,15 @@ export default function ProefritForm({ motorId, motorNaam, motoren = [], instell
     e.preventDefault();
     if (datumFout) return;
     setStatus('loading');
-    const { error } = await supabase.from('afspraken').insert({
-      naam: form.naam,
-      telefoon: form.telefoon,
-      email: form.email || null,
-      datum: form.datum || new Date().toISOString().split('T')[0],
-      type: 'proefrit',
-      voorraad_motor_id: form.geselecteerdeMotorId || null,
-      status: 'aangevraagd',
-      opmerking: displayNaam ? `Proefrit aanvraag voor: ${displayNaam}` : undefined,
+    const { error } = await supabase.rpc('maak_afspraak', {
+      p_naam: form.naam,
+      p_telefoon: form.telefoon,
+      p_email: form.email || null,
+      p_datum: form.datum || new Date().toISOString().split('T')[0],
+      p_type: 'proefrit',
+      p_soort: displayNaam ? `Proefrit: ${displayNaam}` : 'Proefrit',
+      p_voorraad_motor_id: form.geselecteerdeMotorId || null,
+      p_opmerking: null,
     });
     setStatus(error ? 'err' : 'ok');
   }

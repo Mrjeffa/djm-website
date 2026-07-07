@@ -1,4 +1,4 @@
-import { Phone, Mail, MapPin, MessageCircle, Clock, Wrench } from 'lucide-react';
+import { Phone, Mail, MapPin, Smartphone, Clock, Wrench } from 'lucide-react';
 import ServiceForm from '@/components/ServiceForm';
 import { getInstellingen } from '@/lib/getInstellingen';
 import { formatOpeningsTijden } from '@/lib/instellingen';
@@ -34,7 +34,7 @@ export default async function ContactPage() {
       {instellingen.opmerking && (
         <div className="bg-[#E31E24]/10 border-b border-[#E31E24]/20 px-4 py-3">
           <div className="max-w-6xl mx-auto text-sm text-[#E31E24] font-['Barlow_Condensed'] font-bold uppercase tracking-wide">
-            ℹ️ {instellingen.opmerking}
+            {instellingen.opmerking}
           </div>
         </div>
       )}
@@ -46,9 +46,9 @@ export default async function ContactPage() {
           <div className="space-y-3 mb-8">
             {[
               { icon: Phone, label: 'Telefoon', value: '0166-606090', href: 'tel:+31166606090' },
+              { icon: Smartphone, label: 'GSM', value: '06-21908697', href: 'tel:+310621908697' },
               { icon: Mail, label: 'E-mail', value: 'info@dejongemotoren.nl', href: 'mailto:info@dejongemotoren.nl' },
-              { icon: MapPin, label: 'Adres', value: 'Stevinweg 14 · 4691 SM Tholen', href: 'https://maps.google.com/?q=Stevinweg+14+Tholen' },
-              { icon: MessageCircle, label: 'WhatsApp', value: 'Stuur een bericht', href: 'https://wa.me/31612345678' },
+              { icon: MapPin, label: 'Adres', value: 'Stevinweg 14 · 4691 SM Tholen', href: 'https://maps.google.com/?q=Stevinweg+14+4691+SM+Tholen' },
             ].map(({ icon: Icon, label, value, href }) => (
               <div key={label} className="flex items-start gap-3 p-4 border border-[#E5E5E5]">
                 <div className="bg-[#E31E24]/10 p-2 shrink-0">
