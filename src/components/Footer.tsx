@@ -1,8 +1,11 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Phone, Mail, MapPin, Smartphone } from 'lucide-react';
+import { formatOpeningsTijden, type Instellingen } from '@/lib/instellingen';
 
-export default function Footer() {
+export default function Footer({ instellingen }: { instellingen?: Instellingen }) {
+  const tijden = instellingen ? formatOpeningsTijden(instellingen) : [];
+
   return (
     <footer className="bg-[#0A0A0A] text-white border-t border-[#1A1A1A]">
       <div className="max-w-6xl mx-auto px-4 pt-12 pb-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -74,22 +77,25 @@ export default function Footer() {
         {/* Openingstijden */}
         <div>
           <h3 className="font-['Barlow_Condensed'] font-bold uppercase text-xs tracking-[3px] mb-4 text-[#E31E24]">Openingstijden</h3>
-          <p className="text-xs text-[#555] mb-3">Actuele tijden worden beheerd via de app.</p>
-          <ul className="space-y-1.5 text-sm text-[#666]">
-            <li className="flex justify-between gap-4">
-              <span className="text-white text-xs font-['Barlow_Condensed'] font-bold uppercase">Wo – Vr</span>
-              <span className="text-xs">10:00 – 17:30</span>
-            </li>
-            <li className="flex justify-between gap-4">
-              <span className="text-xs">Zaterdag</span>
-              <span className="text-xs">Op afspraak</span>
-            </li>
-            <li className="flex justify-between gap-4">
-              <span className="text-xs">Ma, di, zo</span>
-              <span className="text-xs text-[#444]">Gesloten</span>
-            </li>
-          </ul>
-          <p className="text-[#444] text-xs mt-3">Zie <Link href="/contact" className="hover:text-white underline">contactpagina</Link> voor actuele tijden.</p>
+          {tijden.length > 0 ? (
+            <ul className="space-y-1.5">
+              {tijden.map(({ label, waarde }) => (
+                <li key={label} className="flex justify-between gap-4">
+                  <span className={`text-xs ${waarde === 'Gesloten' ? 'text-[#444]' : 'text-white font-["Barlow_Condensed"] font-bold uppercase'}`}>
+                    {label}
+                  </span>
+                  <span className={`text-xs ${waarde === 'Gesloten' ? 'text-[#444]' : 'text-[#999]'}`}>
+                    {waarde}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-xs text-[#555]">Zie contactpagina voor actuele tijden.</p>
+          )}
+          <p className="text-[#444] text-xs mt-3">
+            <Link href="/contact" className="hover:text-white underline">Contactpagina</Link> voor meer info.
+          </p>
         </div>
       </div>
 

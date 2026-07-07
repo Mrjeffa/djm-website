@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import CookieBanner from "@/components/CookieBanner";
+import { getInstellingen } from "@/lib/getInstellingen";
 
 export const metadata: Metadata = {
   title: {
@@ -46,11 +47,13 @@ const schemaOrg = {
   "description": "Occasion motors kopen, verkopen en proefrijden in Tholen, Zeeland. Al 25 jaar eerlijk en persoonlijk advies.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const instellingen = await getInstellingen();
+
   return (
     <html lang="nl" className="h-full antialiased">
       <head>
@@ -62,7 +65,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <Header />
         <main className="flex-1">{children}</main>
-        <Footer />
+        <Footer instellingen={instellingen} />
         <WhatsAppButton />
         <CookieBanner />
       </body>
