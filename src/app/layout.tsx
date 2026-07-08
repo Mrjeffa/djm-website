@@ -7,6 +7,8 @@ import CookieBanner from "@/components/CookieBanner";
 import { getInstellingen } from "@/lib/getInstellingen";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.dejongemotoren.nl"),
+  alternates: { canonical: "./" },
   title: {
     default: "De Jonge Motoren — Occasion motors kopen in Zeeland",
     template: "%s | De Jonge Motoren",
@@ -18,6 +20,11 @@ export const metadata: Metadata = {
     locale: "nl_NL",
     siteName: "De Jonge Motoren",
   },
+};
+
+const DAG_EN: Record<string, string> = {
+  ma: 'Monday', di: 'Tuesday', wo: 'Wednesday',
+  do: 'Thursday', vr: 'Friday', za: 'Saturday', zo: 'Sunday',
 };
 
 const schemaOrg = {
@@ -39,10 +46,6 @@ const schemaOrg = {
     "latitude": 51.5358,
     "longitude": 4.2158,
   },
-  "openingHoursSpecification": [
-    { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Wednesday","Thursday","Friday"], "opens": "10:00", "closes": "12:00" },
-    { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Wednesday","Thursday","Friday"], "opens": "13:00", "closes": "17:30" },
-  ],
   "priceRange": "€€",
   "description": "Occasion motors kopen, verkopen en proefrijden in Tholen, Zeeland. Al 25 jaar eerlijk en persoonlijk advies.",
 };
@@ -54,12 +57,24 @@ export default async function RootLayout({
 }>) {
   const instellingen = await getInstellingen();
 
+  const schemaMetOpeningstijden = {
+    ...schemaOrg,
+    openingHoursSpecification: Object.entries(instellingen.openingstijden)
+      .filter(([, t]) => !t.gesloten && t.open && t.sluit)
+      .map(([dag, t]) => ({
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": DAG_EN[dag],
+        "opens": t.open,
+        "closes": t.sluit,
+      })),
+  };
+
   return (
     <html lang="nl" className="h-full antialiased">
       <head>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaOrg) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaMetOpeningstijden) }}
         />
       </head>
       <body className="min-h-full flex flex-col">

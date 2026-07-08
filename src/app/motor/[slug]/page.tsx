@@ -11,10 +11,19 @@ export const revalidate = 60;
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const motor = await getMotorById(slug);
-  if (!motor) return { title: 'Motor niet gevonden' };
+  if (!motor) return { title: 'Motor niet gevonden', robots: { index: false } };
+  const title = `${motor.bouwjaar} ${motor.merk} ${motor.model} kopen — Occasion Tholen`;
+  const description = `${motor.merk} ${motor.model} uit ${motor.bouwjaar}, ${formatKm(motor.km)}, ${formatPrijs(motor.prijs)}. ${motor.beschrijving?.slice(0, 120) ?? 'Occasion motorfiets bij De Jonge Motoren in Tholen, Zeeland.'}`;
   return {
-    title: `${motor.bouwjaar} ${motor.merk} ${motor.model} kopen — Occasion Tholen`,
-    description: `${motor.merk} ${motor.model} uit ${motor.bouwjaar}, ${formatKm(motor.km)}, ${formatPrijs(motor.prijs)}. ${motor.beschrijving?.slice(0, 120) ?? 'Occasion motorfiets bij De Jonge Motoren in Tholen, Zeeland.'}`,
+    title,
+    description,
+    alternates: { canonical: `/motor/${motor.id}` },
+    openGraph: {
+      title,
+      description,
+      type: 'website',
+      ...(motor.fotos?.[0] && { images: [{ url: motor.fotos[0], alt: `${motor.merk} ${motor.model} ${motor.bouwjaar}` }] }),
+    },
   };
 }
 
@@ -84,7 +93,7 @@ export default async function MotorDetailPage({ params }: { params: Promise<{ sl
               <div className="grid grid-cols-4 gap-2 mb-6">
                 {motor.fotos.slice(1, 5).map((foto, i) => (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img key={i} src={foto} alt="" className="aspect-square object-cover" />
+                  <img key={i} src={foto} alt={`${motorNaam} foto ${i + 2}`} className="aspect-square object-cover" />
                 ))}
               </div>
             )}
@@ -158,7 +167,7 @@ export default async function MotorDetailPage({ params }: { params: Promise<{ sl
               <div className="font-['Barlow_Condensed'] font-bold uppercase text-xs mb-2 text-[#888]">Locatie</div>
               <div className="font-['Barlow_Condensed'] font-bold">Stevinweg 14</div>
               <div className="text-[#555]">4691 SM Tholen</div>
-              <div className="text-[#888] text-xs mt-2">Wo – Vr: 10:00–12:00 en 13:00–17:30</div>
+              <div className="text-[#888] text-xs mt-2">Actuele openingstijden op de contactpagina.</div>
             </div>
           </div>
         </div>

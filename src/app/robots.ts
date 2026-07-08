@@ -3,6 +3,7 @@ import type { MetadataRoute } from 'next';
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: { userAgent: '*', allow: '/' },
-    sitemap: 'https://djm-website.pages.dev/sitemap.xml',
+    sitemap: 'https://www.dejongemotoren.nl/sitemap.xml',
+    host: 'https://www.dejongemotoren.nl',
   };
 }
