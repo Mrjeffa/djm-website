@@ -4,11 +4,10 @@ import { getInstellingen } from '@/lib/getInstellingen';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Proefrit aanvragen | De Jonge Motoren',
+  title: 'Proefrit aanvragen',
   description: 'Vraag een proefrit aan voor een occasion motor bij De Jonge Motoren in Tholen, Zeeland. Kies een motor uit ons aanbod en wij plannen een moment.',
 };
 
-export const runtime = 'edge';
 export const revalidate = 60;
 
 export default async function ProefritPage({

@@ -34,6 +34,7 @@ export default function Footer({ instellingen }: { instellingen?: Instellingen }
               { href: '/motor-verkopen', label: 'Motor verkopen' },
               { href: '/proefrit', label: 'Proefrit aanvragen' },
               { href: '/over-ons', label: 'Over ons' },
+              { href: '/blog', label: 'Blog' },
               { href: '/contact', label: 'Contact & Service' },
             ].map(({ href, label }) => (
               <li key={href}>
@@ -56,7 +57,7 @@ export default function Footer({ instellingen }: { instellingen?: Instellingen }
               </a>
             </li>
             <li>
-              <a href="tel:+310621908697" className="flex items-center gap-2 text-sm text-[#666] hover:text-white transition-colors">
+              <a href="tel:+31621908697" className="flex items-center gap-2 text-sm text-[#666] hover:text-white transition-colors">
                 <Smartphone size={14} className="text-[#E31E24] shrink-0" />
                 06-21908697
               </a>

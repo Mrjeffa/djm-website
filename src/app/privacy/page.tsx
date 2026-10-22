@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Privacyverklaring | De Jonge Motoren',
+  title: 'Privacyverklaring',
   description: 'Privacyverklaring van De Jonge Motoren. Hoe wij omgaan met uw persoonsgegevens.',
 };
 

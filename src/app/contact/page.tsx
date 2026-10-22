@@ -1,15 +1,14 @@
-import { Phone, Mail, MapPin, Smartphone, Clock, Wrench } from 'lucide-react';
+import { Phone, Mail, MapPin, Smartphone, Clock, Wrench, MessageCircle } from 'lucide-react';
 import ServiceForm from '@/components/ServiceForm';
 import { getInstellingen } from '@/lib/getInstellingen';
 import { formatOpeningsTijden } from '@/lib/instellingen';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Contact & Service | De Jonge Motoren',
+  title: 'Contact & Service',
   description: 'Neem contact op met De Jonge Motoren in Tholen. Bel 0166-606090, stuur een WhatsApp of vraag online een servicebeurt aan.',
 };
 
-export const runtime = 'edge';
 export const revalidate = 60;
 
 export default async function ContactPage() {
@@ -46,7 +45,8 @@ export default async function ContactPage() {
           <div className="space-y-3 mb-8">
             {[
               { icon: Phone, label: 'Telefoon', value: '0166-606090', href: 'tel:+31166606090' },
-              { icon: Smartphone, label: 'GSM', value: '06-21908697', href: 'tel:+310621908697' },
+              { icon: Smartphone, label: 'GSM', value: '06-21908697', href: 'tel:+31621908697' },
+              { icon: MessageCircle, label: 'WhatsApp', value: '06-21908697', href: 'https://wa.me/31621908697' },
               { icon: Mail, label: 'E-mail', value: 'info@dejongemotoren.nl', href: 'mailto:info@dejongemotoren.nl' },
               { icon: MapPin, label: 'Adres', value: 'Stevinweg 14 · 4691 SM Tholen', href: 'https://maps.google.com/?q=Stevinweg+14+4691+SM+Tholen' },
             ].map(({ icon: Icon, label, value, href }) => (

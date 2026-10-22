@@ -3,11 +3,10 @@ import ProductCard from '@/components/ProductCard';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Onderdelen & Accessoires | De Jonge Motoren',
+  title: 'Onderdelen & Accessoires',
   description: 'Motoronderdelen en accessoires bij De Jonge Motoren in Tholen, Zeeland. Bekijk ons aanbod van onderdelen en rijkleding.',
 };
 
-export const runtime = 'edge';
 export const revalidate = 60;
 
 export default async function ProductenPage({

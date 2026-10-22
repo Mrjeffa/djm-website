@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next';
-export const runtime = 'edge';
 import { getMotors } from '@/lib/motors';
+
+export const runtime = 'edge';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = 'https://www.dejongemotoren.nl';

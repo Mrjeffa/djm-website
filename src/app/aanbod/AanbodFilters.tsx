@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
-import { X } from 'lucide-react';
+import { X, ChevronDown } from 'lucide-react';
 
 const merken = ['Honda', 'Yamaha', 'Kawasaki', 'BMW', 'Suzuki', 'Ducati', 'KTM', 'Triumph', 'Aprilia'];
 const types = ['Naked', 'Sport', 'Tourer', 'Adventure', 'Cruiser', 'Scrambler', 'Enduro'];
@@ -29,32 +29,36 @@ function Filters() {
     <div className="mb-10">
       <div className="flex flex-wrap gap-3 items-center">
         <div className="relative">
-          <select className={selectClass} value={params.get('merk') || ''} onChange={e => update('merk', e.target.value)}>
+          <select aria-label="Merk" className={selectClass} value={params.get('merk') || ''} onChange={e => update('merk', e.target.value)}>
             <option value="">Alle merken</option>
             {merken.map(m => <option key={m} value={m}>{m}</option>)}
           </select>
+          <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#888]" />
         </div>
         <div className="relative">
-          <select className={selectClass} value={params.get('type') || ''} onChange={e => update('type', e.target.value)}>
+          <select aria-label="Type" className={selectClass} value={params.get('type') || ''} onChange={e => update('type', e.target.value)}>
             <option value="">Alle types</option>
             {types.map(t => <option key={t} value={t}>{t}</option>)}
           </select>
+          <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#888]" />
         </div>
         <div className="relative">
-          <select className={selectClass} value={params.get('maxPrijs') || ''} onChange={e => update('maxPrijs', e.target.value)}>
+          <select aria-label="Maximale prijs" className={selectClass} value={params.get('maxPrijs') || ''} onChange={e => update('maxPrijs', e.target.value)}>
             <option value="">Max. prijs</option>
             {[3000,5000,7500,10000,15000].map(p => (
               <option key={p} value={p}>t/m €{p.toLocaleString('nl-NL')}</option>
             ))}
           </select>
+          <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#888]" />
         </div>
         <div className="relative">
-          <select className={selectClass} value={params.get('maxKm') || ''} onChange={e => update('maxKm', e.target.value)}>
+          <select aria-label="Maximale kilometerstand" className={selectClass} value={params.get('maxKm') || ''} onChange={e => update('maxKm', e.target.value)}>
             <option value="">Max. km-stand</option>
             {[10000,20000,30000,50000,75000].map(k => (
               <option key={k} value={k}>t/m {k.toLocaleString('nl-NL')} km</option>
             ))}
           </select>
+          <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#888]" />
         </div>
         {hasFilters && (
           <button onClick={reset}

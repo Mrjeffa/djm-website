@@ -116,7 +116,7 @@ export default function ProefritForm({ motorId, motorNaam, motoren = [], instell
       <input
         required
         type="text"
-        placeholder="Jouw naam *"
+        aria-label="Jouw naam" placeholder="Jouw naam *"
         value={form.naam}
         onChange={e => setForm(f => ({ ...f, naam: e.target.value }))}
         className="w-full border border-[#E5E5E5] px-3 py-2.5 text-sm focus:outline-none focus:border-[#E31E24]"
@@ -124,14 +124,14 @@ export default function ProefritForm({ motorId, motorNaam, motoren = [], instell
       <input
         required
         type="tel"
-        placeholder="Telefoonnummer *"
+        aria-label="Telefoonnummer" placeholder="Telefoonnummer *"
         value={form.telefoon}
         onChange={e => setForm(f => ({ ...f, telefoon: e.target.value }))}
         className="w-full border border-[#E5E5E5] px-3 py-2.5 text-sm focus:outline-none focus:border-[#E31E24]"
       />
       <input
         type="email"
-        placeholder="E-mailadres (optioneel)"
+        aria-label="E-mailadres (optioneel)" placeholder="E-mailadres (optioneel)"
         value={form.email}
         onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
         className="w-full border border-[#E5E5E5] px-3 py-2.5 text-sm focus:outline-none focus:border-[#E31E24]"

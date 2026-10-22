@@ -4,11 +4,10 @@ import AanbodFilters from './AanbodFilters';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Occasion motors kopen in Tholen | De Jonge Motoren',
+  title: 'Occasion motors kopen in Tholen',
   description: 'Bekijk alle beschikbare occasion motors bij De Jonge Motoren in Tholen, Zeeland. BMW, Honda, Kawasaki, Yamaha en meer. Filter op merk, type, prijs en km-stand.',
 };
 
-export const runtime = 'edge';
 export const revalidate = 60;
 
 export default async function AanbodPage({

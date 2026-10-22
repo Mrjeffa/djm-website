@@ -3,7 +3,7 @@ import { CheckCircle } from 'lucide-react';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Motor verkopen | De Jonge Motoren',
+  title: 'Motor verkopen',
   description: 'Wil je jouw motor verkopen? Vraag een vrijblijvende taxatie aan. Eerlijke prijs, snelle afhandeling. Motordealer Tholen, Zeeland.',
 };
 

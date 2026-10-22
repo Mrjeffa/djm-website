@@ -1,11 +1,11 @@
 import { getMotorById, getMotors, formatPrijs, formatKm } from '@/lib/motors';
 import { notFound } from 'next/navigation';
 import ProefritForm from '@/components/ProefritForm';
+import { getInstellingen } from '@/lib/getInstellingen';
 import MotorCard from '@/components/MotorCard';
 import { Bike, Calendar, Gauge, Zap, MessageCircle, Phone, Tag } from 'lucide-react';
 import type { Metadata } from 'next';
 
-export const runtime = 'edge';
 export const revalidate = 60;
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
@@ -32,9 +32,11 @@ export default async function MotorDetailPage({ params }: { params: Promise<{ sl
   const motor = await getMotorById(slug);
   if (!motor) notFound();
 
-  const vergelijkbaar = (await getMotors(motor.type ? { type: motor.type } : undefined))
-    .filter(m => m.id !== motor.id)
-    .slice(0, 3);
+  const [alleVergelijkbaar, instellingen] = await Promise.all([
+    getMotors(motor.type ? { type: motor.type } : undefined),
+    getInstellingen(),
+  ]);
+  const vergelijkbaar = alleVergelijkbaar.filter(m => m.id !== motor.id).slice(0, 3);
 
   const motorNaam = `${motor.merk} ${motor.model} (${motor.bouwjaar})`;
   const whatsappMsg = encodeURIComponent(`Hoi, ik heb interesse in de ${motorNaam} — ${formatPrijs(motor.prijs)}.`);
@@ -148,12 +150,12 @@ export default async function MotorDetailPage({ params }: { params: Promise<{ sl
           <div className="space-y-4">
             <div className="border border-[#E5E5E5] p-5">
               <h3 className="font-['Barlow_Condensed'] font-bold text-lg uppercase mb-4">Proefrit aanvragen</h3>
-              <ProefritForm motorId={motor.id} motorNaam={motorNaam} />
+              <ProefritForm motorId={motor.id} motorNaam={motorNaam} instellingen={instellingen} />
             </div>
 
             <div className="border border-[#E5E5E5] p-5 space-y-3">
               <h3 className="font-['Barlow_Condensed'] font-bold text-lg uppercase mb-2">Direct contact</h3>
-              <a href={`https://wa.me/31166606090?text=${whatsappMsg}`} target="_blank" rel="noopener noreferrer"
+              <a href={`https://wa.me/31621908697?text=${whatsappMsg}`} target="_blank" rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 bg-[#25D366] text-white font-['Barlow_Condensed'] font-bold uppercase py-3 w-full hover:bg-[#20ba59] transition-colors">
                 <MessageCircle size={16} /> WhatsApp
               </a>

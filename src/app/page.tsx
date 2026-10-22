@@ -4,7 +4,6 @@ import { getNieuweMotors } from '@/lib/motors';
 import MotorCard from '@/components/MotorCard';
 import InkoopForm from '@/components/InkoopForm';
 
-export const runtime = 'edge';
 export const revalidate = 60;
 
 export default async function HomePage() {
@@ -52,7 +51,7 @@ export default async function HomePage() {
             {[
               { nr: '25+', label: 'Jaar ervaring' },
               { nr: '100%', label: 'Eerlijk advies' },
-              { nr: '★ 4.9', label: 'Google Reviews' },
+              { nr: 'Gratis', label: 'Proefrit' },
             ].map(({ nr, label }) => (
               <div key={label}>
                 <div className="font-['Barlow_Condensed'] font-black text-white text-2xl">{nr}</div>
@@ -81,10 +80,17 @@ export default async function HomePage() {
           </div>
 
           {motoren.length === 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {[1,2,3,4].map(i => (
-                <div key={i} className="aspect-[3/4] bg-[#F5F5F5] animate-pulse" />
-              ))}
+            <div className="bg-[#F5F5F5] border-l-4 border-[#E31E24] p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+              <div>
+                <p className="font-['Barlow_Condensed'] font-black text-2xl uppercase mb-1">Net alles verkocht</p>
+                <p className="text-sm text-[#666] max-w-lg">
+                  Er staat op dit moment geen motor online. Zoek je iets specifieks? Laat het ons weten, dan houden we de ogen voor je open.
+                </p>
+              </div>
+              <Link href="/contact"
+                className="shrink-0 inline-flex items-center gap-2 bg-[#E31E24] text-white font-['Barlow_Condensed'] font-bold uppercase tracking-widest px-6 py-3 text-sm hover:bg-[#c01920] transition-colors">
+                Neem contact op <ArrowRight size={14} />
+              </Link>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -221,20 +227,14 @@ export default async function HomePage() {
             style={{ fontSize: 'clamp(2rem, 4vw, 3.5rem)' }}>
             Wat klanten zeggen
           </h2>
-          <p className="text-center text-[#888] text-sm mb-12 font-['Barlow_Condensed'] uppercase tracking-widest">★★★★★ 4.9 / 5</p>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              { naam: 'Thomas V.', tekst: 'Super ervaring bij DJM. Eerlijke prijs, geen druk en de motor was exact zoals beschreven. Aanrader!', rating: 5 },
-              { naam: 'Marloes de B.', tekst: 'Mijn eerste motor gekocht via DJM. Het team nam de tijd om alles uit te leggen. Echt een fijne dealer.', rating: 5 },
-              { naam: 'Remco P.', tekst: 'Motor verkocht aan DJM. Binnen een dag geregeld, eerlijke taxatie en direct betaald. Perfect.', rating: 5 },
-            ].map(({ naam, tekst, rating }) => (
-              <div key={naam} className="bg-[#F8F8F8] p-8 border-t-4 border-[#E31E24]">
-                <div className="text-[#E31E24] text-lg mb-4 tracking-widest">{'★'.repeat(rating)}</div>
-                <p className="text-sm text-[#444] leading-relaxed mb-6">&ldquo;{tekst}&rdquo;</p>
-                <div className="font-['Barlow_Condensed'] font-black text-sm uppercase tracking-widest">{naam}</div>
-              </div>
-            ))}
+          <p className="text-center text-[#666] max-w-xl mx-auto mb-8 leading-relaxed">
+            Benieuwd hoe anderen hun motor bij ons kochten of verkochten? Lees de ervaringen van klanten op ons Google-bedrijfsprofiel.
+          </p>
+          <div className="text-center">
+            <a href="https://www.google.com/search?q=De+Jonge+Motoren+Tholen" target="_blank" rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 border border-[#1A1A1A] font-['Barlow_Condensed'] font-bold uppercase tracking-widest px-6 py-3 text-sm hover:bg-[#1A1A1A] hover:text-white transition-colors">
+              Bekijk reviews op Google <ArrowRight size={14} />
+            </a>
           </div>
         </div>
       </section>

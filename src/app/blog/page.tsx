@@ -3,7 +3,7 @@ import { ArrowRight } from 'lucide-react';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Blog — Motortips & Advies | De Jonge Motoren',
+  title: 'Blog — Motortips & Advies',
   description: 'Motortips, koopadvies en nieuws van De Jonge Motoren. Welke motor voor beginners, motorverzekering, onderhoudstips en meer.',
 };
 

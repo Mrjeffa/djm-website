@@ -38,20 +38,20 @@ export default function InkoopForm() {
 
   return (
     <form onSubmit={submit} className="space-y-3">
-      <input required type="text" placeholder="Jouw naam" value={form.naam} onChange={e => set('naam', e.target.value)}
+      <input required type="text" aria-label="Jouw naam" placeholder="Jouw naam" value={form.naam} onChange={e => set('naam', e.target.value)}
         className="w-full bg-white/10 border border-white/30 text-white placeholder-white/50 px-4 py-3 text-sm focus:outline-none focus:border-white" />
-      <input required type="tel" placeholder="Telefoonnummer" value={form.telefoon} onChange={e => set('telefoon', e.target.value)}
+      <input required type="tel" aria-label="Telefoonnummer" placeholder="Telefoonnummer" value={form.telefoon} onChange={e => set('telefoon', e.target.value)}
         className="w-full bg-white/10 border border-white/30 text-white placeholder-white/50 px-4 py-3 text-sm focus:outline-none focus:border-white" />
       <div className="grid grid-cols-2 gap-3">
-        <input type="text" placeholder="Merk (bijv. Honda)" value={form.merk} onChange={e => set('merk', e.target.value)}
+        <input type="text" aria-label="Merk (bijv. Honda)" placeholder="Merk (bijv. Honda)" value={form.merk} onChange={e => set('merk', e.target.value)}
           className="w-full bg-white/10 border border-white/30 text-white placeholder-white/50 px-4 py-3 text-sm focus:outline-none focus:border-white" />
-        <input type="text" placeholder="Model (bijv. CB500F)" value={form.model} onChange={e => set('model', e.target.value)}
+        <input type="text" aria-label="Model (bijv. CB500F)" placeholder="Model (bijv. CB500F)" value={form.model} onChange={e => set('model', e.target.value)}
           className="w-full bg-white/10 border border-white/30 text-white placeholder-white/50 px-4 py-3 text-sm focus:outline-none focus:border-white" />
       </div>
       <div className="grid grid-cols-2 gap-3">
-        <input type="number" placeholder="Bouwjaar" value={form.bouwjaar} onChange={e => set('bouwjaar', e.target.value)}
+        <input type="number" aria-label="Bouwjaar" placeholder="Bouwjaar" value={form.bouwjaar} onChange={e => set('bouwjaar', e.target.value)}
           className="w-full bg-white/10 border border-white/30 text-white placeholder-white/50 px-4 py-3 text-sm focus:outline-none focus:border-white" />
-        <input type="number" placeholder="Km-stand" value={form.km} onChange={e => set('km', e.target.value)}
+        <input type="number" aria-label="Km-stand" placeholder="Km-stand" value={form.km} onChange={e => set('km', e.target.value)}
           className="w-full bg-white/10 border border-white/30 text-white placeholder-white/50 px-4 py-3 text-sm focus:outline-none focus:border-white" />
       </div>
       <button type="submit" disabled={status === 'loading'}

@@ -1,13 +1,20 @@
 import Link from 'next/link';
 import { ArrowRight, CheckCircle } from 'lucide-react';
 import type { Metadata } from 'next';
+import { getInstellingen } from '@/lib/getInstellingen';
+import { formatOpeningsTijden } from '@/lib/instellingen';
 
 export const metadata: Metadata = {
-  title: 'Over Jeffrey & Anouk | De Jonge Motoren Tholen',
+  title: 'Over ons — Jeffrey & Anouk',
   description: 'Jeffrey en Anouk nemen De Jonge Motoren over. Een nieuw hoofdstuk voor de vertrouwde motordealer in Tholen, Zeeland — met dezelfde eerlijkheid en passie.',
 };
 
-export default function OverOnsPage() {
+export default async function OverOnsPage() {
+  const tijden = formatOpeningsTijden(await getInstellingen())
+    .filter(t => t.waarde !== 'Gesloten')
+    .map(t => `${t.label}: ${t.waarde}`)
+    .join(' · ');
+
   return (
     <div>
       <div className="bg-[#0A0A0A] text-white py-16 px-4">
@@ -78,7 +85,7 @@ export default function OverOnsPage() {
         <div className="bg-[#E31E24] p-8 text-white text-center">
           <h2 className="font-['Barlow_Condensed'] font-black text-4xl uppercase mb-3">Kom langs of bel ons</h2>
           <p className="text-white/80 mb-2 text-sm">Stevinweg 14 · 4691 SM Tholen · 0166-606090</p>
-          <p className="text-white/60 mb-6 text-xs">Wo – Vr: 10:00–12:00 en 13:00–17:30 · Overige tijden op afspraak</p>
+          <p className="text-white/60 mb-6 text-xs">{tijden} · Overige tijden op afspraak</p>
           <div className="flex flex-wrap gap-3 justify-center">
             <Link href="/aanbod" className="inline-flex items-center gap-1 bg-white text-[#E31E24] font-['Barlow_Condensed'] font-bold uppercase px-6 py-3 hover:bg-white/90 transition-colors">
               Bekijk aanbod <ArrowRight size={14} />

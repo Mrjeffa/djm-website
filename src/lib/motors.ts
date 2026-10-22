@@ -91,6 +91,7 @@ export async function getMotorById(id: string): Promise<Motor | null> {
     .from('voorraad')
     .select('*')
     .eq('id', id)
+    .in('status', ['beschikbaar', 'gereserveerd'])
     .maybeSingle();
   return data ? normalize(data) : null;
 }

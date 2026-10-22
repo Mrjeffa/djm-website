@@ -45,7 +45,7 @@ export default function Header() {
 
         <div className="hidden md:flex items-center gap-2">
           <a
-            href="tel:+310621908697"
+            href="tel:+31621908697"
             className="flex items-center gap-1.5 text-[#AAA] hover:text-white font-['Barlow_Condensed'] font-bold text-sm uppercase tracking-wide transition-colors"
           >
             <Phone size={13} />
@@ -85,7 +85,7 @@ export default function Header() {
               </Link>
             ))}
             <a
-              href="tel:+310621908697"
+              href="tel:+31621908697"
               className="flex items-center gap-2 px-4 py-3.5 border-b border-[#1A1A1A] font-['Barlow_Condensed'] font-bold text-[#AAA] uppercase"
             >
               <Phone size={14} />

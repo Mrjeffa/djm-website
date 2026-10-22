@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Algemene Voorwaarden | De Jonge Motoren',
+  title: 'Algemene Voorwaarden',
   description: 'Algemene voorwaarden van De Jonge Motoren, motordealer in Tholen, Zeeland.',
 };
 

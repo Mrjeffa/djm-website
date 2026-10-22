@@ -6,6 +6,9 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 import CookieBanner from "@/components/CookieBanner";
 import { getInstellingen } from "@/lib/getInstellingen";
 
+// Cloudflare Pages (next-on-pages) requires every dynamic route, including /_not-found, to run on the edge.
+export const runtime = "edge";
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.dejongemotoren.nl"),
   alternates: { canonical: "./" },

@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation';
-export const runtime = 'edge';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import type { Metadata } from 'next';
@@ -138,7 +137,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const post = posts[slug];
   if (!post) return { title: 'Artikel niet gevonden' };
   return {
-    title: `${post.titel} | De Jonge Motoren Blog`,
+    title: post.titel,
     description: post.inhoud.slice(0, 155) + '...',
   };
 }
