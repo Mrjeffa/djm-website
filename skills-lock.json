@@ -13,5 +13,11 @@
       "skillPath": "skills/supabase-postgres-best-practices/SKILL.md",
       "computedHash": "0d2c4857a7d6fdcd3fbc46e458fa4c497f029cab89a01548b3defce203003932"
     }
+  },
+  "karpathy-guidelines": {
+    "source": "multica-ai/andrej-karpathy-skills",
+    "sourceType": "github",
+    "skillPath": "skills/karpathy-guidelines/SKILL.md",
+    "computedHash": "6e22cc54cb02a5e98ae42d06d9d7292db0c1b43894831b32879beb0166b2aea7"
   }
 }
