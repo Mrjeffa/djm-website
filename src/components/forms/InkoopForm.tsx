@@ -1,7 +1,8 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Camera, Mail, MessageCircle } from 'lucide-react';
+import { BEDRIJF, whatsappUrl } from '@/lib/site';
 import {
   Bedankt, Field, Foutmelding, LieverDirect, checkTelefoon, checkVerplicht,
   fieldProps, focusEersteFout, supabase,
@@ -64,11 +65,42 @@ export default function InkoopForm() {
   }
 
   if (status === 'ok') {
+    const motor = `${form.merk.trim()} ${form.model.trim()}`;
+    const gegevens = [
+      `Naam: ${form.naam.trim()}`,
+      `Telefoon: ${form.telefoon.trim()}`,
+      `Motor: ${motor}`,
+      form.bouwjaar && `Bouwjaar: ${form.bouwjaar}`,
+      form.km && `Kilometerstand: ${Number(form.km.replace(/\./g, '')).toLocaleString('nl-NL')} km`,
+    ].filter(Boolean).join('\n');
+    const mailBody = `Hoi De Jonge Motoren,\n\nHierbij de foto's van mijn motor voor de taxatie.\n\n${gegevens}\n\nGroet,\n${form.naam.trim()}`;
+    const mailHref = `mailto:${BEDRIJF.email}?subject=${encodeURIComponent(`Foto's voor taxatie: ${motor}`)}&body=${encodeURIComponent(mailBody.replace(/\n/g, '\r\n'))}`;
+    const appHref = whatsappUrl(`Hoi De Jonge Motoren, hierbij de foto's van mijn motor voor de taxatie.\n\n${gegevens}`);
+
     return (
-      <Bedankt
-        titel={`Bedankt, ${form.naam.trim().split(' ')[0]}`}
-        tekst={`We bellen je op ${form.telefoon} over je ${form.merk} ${form.model} en plannen samen de taxatie.`}
-      />
+      <div className="space-y-6">
+        <Bedankt
+          titel={`Bedankt, ${form.naam.trim().split(' ')[0]}`}
+          tekst={`We bellen je op ${form.telefoon} over je ${motor} en plannen samen de taxatie.`}
+        />
+        <div className="border border-line bg-white p-6">
+          <h3 className="flex items-center gap-2 text-2xl"><Camera size={24} className="text-red" aria-hidden /> Stuur ook foto&apos;s mee</h3>
+          <p className="mt-2 text-muted">
+            Met foto&apos;s kunnen we je motor sneller en nauwkeuriger taxeren. Kies hieronder mail of WhatsApp: je gegevens staan al in het bericht, je hoeft alleen de foto&apos;s toe te voegen en te versturen.
+          </p>
+          <div className="mt-5 grid gap-3 sm:grid-cols-2">
+            <a href={appHref} target="_blank" rel="noopener noreferrer" className="btn btn-whatsapp">
+              <MessageCircle size={18} aria-hidden /> Foto&apos;s via WhatsApp
+            </a>
+            <a href={mailHref} className="btn btn-dark">
+              <Mail size={18} aria-hidden /> Foto&apos;s via mail
+            </a>
+          </div>
+          <p className="mt-4 text-sm text-muted">
+            Handig: beide zijkanten, voor- en achterkant, het dashboard met de kilometerstand en eventuele schade of gebruikssporen.
+          </p>
+        </div>
+      </div>
     );
   }
 
@@ -115,6 +147,7 @@ export default function InkoopForm() {
             <input {...fieldProps('ik-telefoon', fouten.telefoon, 'hint')} type="tel" inputMode="tel" autoComplete="tel" placeholder="06 12345678"
               value={form.telefoon} onChange={e => zet('telefoon', e.target.value)} onBlur={() => valideer('telefoon')} />
           </Field>
+          <p className="text-sm text-muted">Na het versturen kun je met één klik foto&apos;s sturen via WhatsApp of mail.</p>
           {status === 'fout' && <Foutmelding />}
           <div className="flex flex-col-reverse gap-3 sm:flex-row">
             <button type="button" onClick={() => setStap(1)} className="btn btn-outline sm:w-auto">

@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 };
 
 const STAPPEN = [
-  ['Vul je motor in', 'Merk, model, bouwjaar en kilometerstand. Met je naam en telefoonnummer zijn we klaar.'],
+  ['Vul je motor in', 'Merk, model, bouwjaar en kilometerstand, plus je naam en telefoonnummer. Daarna stuur je foto\'s via WhatsApp of mail.'],
   ['We bellen je terug', 'We vragen naar de staat, het onderhoud en eventuele schade, en spreken een taxatie af.'],
   ['Taxatie en bod', 'Je komt langs in Tholen of we spreken een andere plek af. We bekijken de motor samen en doen je een bod.'],
   ['Overdracht en betaling', 'Ga je akkoord, dan regelen we de overschrijving en de betaling direct.'],
