@@ -1,29 +1,28 @@
 import type { MetadataRoute } from 'next';
+import { getMotors, motorPad } from '@/lib/motors';
+import { getProducten } from '@/lib/producten';
+import { BLOG_POSTS } from '@/content/blog';
+import { SITE_URL } from '@/lib/site';
+
 export const runtime = 'edge';
-import { getMotors } from '@/lib/motors';
+export const dynamic = 'force-dynamic';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = 'https://www.dejongemotoren.nl';
+  const [motoren, producten] = await Promise.all([getMotors(), getProducten()]);
+  const laatsteMotor = motoren.map(m => m.datumIn ?? m.createdAt).filter(Boolean).sort().at(-1);
 
-  const motors = await getMotors();
-  const motorUrls = motors.map(m => ({
-    url: `${base}/motor/${m.id}`,
-    lastModified: new Date(m.datum_in ?? m.created_at),
-    changeFrequency: 'weekly' as const,
-    priority: 0.8,
+  const vast: MetadataRoute.Sitemap = [
+    '/', '/occasions', '/werkplaats', '/winterstalling', '/motor-verkopen', '/proefrit',
+    '/over-ons', '/contact', '/veelgestelde-vragen', '/blog', '/privacy', '/algemene-voorwaarden',
+    ...(producten.length ? ['/onderdelen'] : []),
+  ].map(path => ({
+    url: `${SITE_URL}${path === '/' ? '' : path}`,
+    ...((path === '/' || path === '/occasions') && laatsteMotor ? { lastModified: new Date(laatsteMotor) } : {}),
   }));
 
   return [
-    { url: base, lastModified: new Date(), changeFrequency: 'daily', priority: 1 },
-    { url: `${base}/aanbod`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.9 },
-    { url: `${base}/motor-verkopen`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
-    { url: `${base}/proefrit`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
-    { url: `${base}/over-ons`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.5 },
-    { url: `${base}/blog`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.6 },
-    { url: `${base}/contact`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.5 },
-    { url: `${base}/producten`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 },
-    { url: `${base}/privacy`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.2 },
-    { url: `${base}/algemene-voorwaarden`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.2 },
-    ...motorUrls,
+    ...vast,
+    ...motoren.map(m => ({ url: `${SITE_URL}${motorPad(m)}`, lastModified: new Date(m.datumIn ?? m.createdAt) })),
+    ...BLOG_POSTS.map(p => ({ url: `${SITE_URL}/blog/${p.slug}`, lastModified: new Date(p.bijgewerkt) })),
   ];
 }

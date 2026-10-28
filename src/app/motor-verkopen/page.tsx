@@ -1,70 +1,97 @@
-import InkoopForm from '@/components/InkoopForm';
-import { CheckCircle } from 'lucide-react';
 import type { Metadata } from 'next';
+import { getInstellingen } from '@/lib/getInstellingen';
+import { BEDRIJF, OG_IMAGE } from '@/lib/site';
+import { breadcrumb, faqNode, graph, webPage, ORG_ID } from '@/lib/schema';
+import { getFaqGroepen } from '@/content/faq';
+import { Breadcrumbs } from '@/components/PageHeader';
+import InkoopForm from '@/components/forms/InkoopForm';
+import FaqList from '@/components/FaqList';
+import JsonLd from '@/components/JsonLd';
+
+const TITEL = 'Motor verkopen in Zeeland en West-Brabant';
+const DESCRIPTION = 'Verkoop je motor aan De Jonge Motoren in Tholen. Vul merk, model en kilometerstand in, ontvang een vrijblijvende taxatie en regel overdracht en betaling direct.';
 
 export const metadata: Metadata = {
-  title: 'Motor verkopen | De Jonge Motoren',
-  description: 'Wil je jouw motor verkopen? Vraag een vrijblijvende taxatie aan. Eerlijke prijs, snelle afhandeling. Motordealer Tholen, Zeeland.',
+  title: TITEL,
+  description: DESCRIPTION,
+  alternates: { canonical: '/motor-verkopen' },
+  openGraph: { title: TITEL, description: DESCRIPTION, url: '/motor-verkopen', images: [OG_IMAGE] },
 };
 
-export default function MotorVerkopenPage() {
+const STAPPEN = [
+  ['Vul je motor in', 'Merk, model, bouwjaar en kilometerstand, plus je naam en telefoonnummer. Daarna stuur je foto\'s via WhatsApp of mail.'],
+  ['We bellen je terug', 'We vragen naar de staat, het onderhoud en eventuele schade, en spreken een taxatie af.'],
+  ['Taxatie en bod', 'Je komt langs in Tholen of we spreken een andere plek af. We bekijken de motor samen en doen je een bod.'],
+  ['Overdracht en betaling', 'Ga je akkoord, dan regelen we de overschrijving en de betaling direct.'],
+];
+
+export default async function MotorVerkopenPage() {
+  const inst = await getInstellingen();
+  const faqs = getFaqGroepen(inst).find(g => g.id === 'verkopen')?.items ?? [];
+
   return (
-    <div>
-      <div className="bg-[#0A0A0A] text-white py-16 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="font-['Barlow_Condensed'] text-[10px] font-bold uppercase tracking-[4px] text-[#E31E24] mb-2">Vrijblijvend</div>
-          <h1 className="font-['Barlow_Condensed'] font-black uppercase leading-none mb-4"
-            style={{ fontSize: 'clamp(3rem, 7vw, 6rem)' }}>
-            Motor verkopen
-          </h1>
-          <p className="text-[#AAA] max-w-xl leading-relaxed">
-            Wij kopen jouw motor. Geen gedoe, geen tussenpersonen. Eerlijke taxatie, directe betaling.
-          </p>
-        </div>
-      </div>
+    <>
+      <JsonLd data={graph(
+        webPage('/motor-verkopen', TITEL, DESCRIPTION, 'WebPage', {
+          mainEntity: { '@type': 'Service', name: 'Motor inkoop', serviceType: 'Inkoop van gebruikte motoren', provider: { '@id': ORG_ID }, areaServed: ['Zeeland', 'West-Brabant'] },
+        }),
+        breadcrumb([{ name: 'Motor verkopen', path: '/motor-verkopen' }]),
+        faqNode('/motor-verkopen', faqs),
+      )} />
 
-      <div className="max-w-6xl mx-auto px-4 py-12 grid grid-cols-1 lg:grid-cols-2 gap-12">
-        <div>
-          <h2 className="font-['Barlow_Condensed'] font-black text-3xl uppercase mb-6">Hoe werkt het?</h2>
-          <div className="space-y-6">
-            {[
-              { nr: '01', title: 'Vul het formulier in', desc: 'Naam, telefoonnummer, merk/model en km-stand. Dat is alles wat we nodig hebben.' },
-              { nr: '02', title: 'We bellen je terug', desc: 'Binnen één werkdag. Eerlijk gesprek, geen verkooppraat.' },
-              { nr: '03', title: 'Taxatie op locatie', desc: 'We komen naar jou toe of jij komt langs in Tholen. We beoordelen de motor samen.' },
-              { nr: '04', title: 'Directe betaling', desc: 'Akkoord? Betaling dezelfde dag. Motor van de hand, geld op de rekening.' },
-            ].map(({ nr, title, desc }) => (
-              <div key={nr} className="flex gap-4">
-                <div className="font-['Barlow_Condensed'] font-black text-3xl text-[#E31E24]/20 w-10 shrink-0">{nr}</div>
-                <div>
-                  <h3 className="font-['Barlow_Condensed'] font-bold text-lg uppercase mb-1">{title}</h3>
-                  <p className="text-[#888] text-sm">{desc}</p>
-                </div>
-              </div>
+      <section className="border-b border-line bg-surface-2">
+        <div className="container-site grid gap-10 py-10 lg:grid-cols-12 lg:py-14">
+          <div className="lg:col-span-6">
+            <Breadcrumbs items={[{ name: 'Motor verkopen', path: '/motor-verkopen' }]} />
+            <p className="eyebrow mt-8">Inkoop alle merken</p>
+            <h1 className="mt-3 text-[clamp(2.5rem,6vw,4.75rem)]">{TITEL}</h1>
+            <p className="mt-5 max-w-xl text-lg text-muted">
+              {BEDRIJF.naam} koopt motoren van alle merken en types. {inst.content.inkoop_ondertitel}
+            </p>
+            <ul className="mt-8 space-y-3">
+              {['Je hoeft geen advertentie te plaatsen of kijkers te ontvangen', 'Vrijblijvende taxatie door een motorzaak', `Persoonlijk contact met ${BEDRIJF.naam} in ${BEDRIJF.plaats}`].map(p => (
+                <li key={p} className="flex gap-3"><span className="mt-2.5 h-2 w-2 shrink-0 bg-red" aria-hidden />{p}</li>
+              ))}
+            </ul>
+          </div>
+          <div className="border border-line bg-white p-6 sm:p-8 lg:col-span-6">
+            <h2 className="text-2xl">Vraag een vrijblijvende taxatie aan</h2>
+            <div className="mt-6"><InkoopForm /></div>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-16 lg:py-20" aria-labelledby="stappen-titel">
+        <div className="container-site">
+          <h2 id="stappen-titel" className="text-[clamp(2rem,4vw,3rem)]">Zo verkoop je je motor aan ons</h2>
+          <ol className="mt-10 grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
+            {STAPPEN.map(([titel, tekst], i) => (
+              <li key={titel} className="bg-white p-7">
+                <span className="tabular font-display text-5xl font-extrabold text-red">{i + 1}</span>
+                <h3 className="mt-3 text-2xl">{titel}</h3>
+                <p className="mt-2 text-muted">{tekst}</p>
+              </li>
             ))}
-          </div>
+          </ol>
+        </div>
+      </section>
 
-          <div className="mt-8 bg-[#F5F5F5] p-6 border-l-4 border-[#E31E24]">
-            <h3 className="font-['Barlow_Condensed'] font-bold uppercase mb-3">Waarom bij DJM verkopen?</h3>
-            {[
-              'Eerlijke taxatie, geen gefluister',
-              'Geen wachten op kopers via Marktplaats',
-              'Directe uitbetaling, geen discussie',
-              'Alle merken en types welkom',
-            ].map(item => (
-              <div key={item} className="flex items-center gap-2 text-sm text-[#555] mb-2">
-                <CheckCircle size={14} className="text-[#E31E24] shrink-0" /> {item}
-              </div>
-            ))}
+      <section className="border-t border-line bg-surface-2 py-16 lg:py-20" aria-labelledby="verkopen-faq">
+        <div className="container-site grid gap-12 lg:grid-cols-12">
+          <div className="prose-djm lg:col-span-5">
+            <h2 id="verkopen-faq" className="!mt-0 text-[clamp(2rem,4vw,3rem)]">Wat bepaalt de prijs?</h2>
+            <p>
+              De taxatiewaarde van een gebruikte motor hangt af van het merk, model en bouwjaar, de kilometerstand, de staat van banden, ketting en remmen, het onderhoud en de vraag naar dat type motor.
+            </p>
+            <p>
+              Neem bij de taxatie het kentekenbewijs, het onderhoudsboekje en alle sleutels mee. Heb je accessoires of originele onderdelen, zoals koffers of een origineel uitlaatsysteem, vermeld dat dan ook.
+            </p>
+          </div>
+          <div className="lg:col-span-7">
+            <FaqList items={faqs} />
           </div>
         </div>
-
-        <div>
-          <h2 className="font-['Barlow_Condensed'] font-black text-3xl uppercase mb-6">Taxatie aanvragen</h2>
-          <div className="bg-[#E31E24] p-6">
-            <InkoopForm />
-          </div>
-        </div>
-      </div>
-    </div>
+      </section>
+    </>
   );
 }

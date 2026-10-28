@@ -1,76 +1,75 @@
 import type { Metadata } from 'next';
+import { BEDRIJF } from '@/lib/site';
+import { breadcrumb, graph, webPage } from '@/lib/schema';
+import PageHeader from '@/components/PageHeader';
+import JsonLd from '@/components/JsonLd';
+
+const DESCRIPTION = 'Hoe De Jonge Motoren in Tholen omgaat met je persoonsgegevens als je een formulier invult of contact opneemt.';
 
 export const metadata: Metadata = {
-  title: 'Privacyverklaring | De Jonge Motoren',
-  description: 'Privacyverklaring van De Jonge Motoren. Hoe wij omgaan met uw persoonsgegevens.',
+  title: 'Privacyverklaring',
+  description: DESCRIPTION,
+  alternates: { canonical: '/privacy' },
 };
 
 export default function PrivacyPage() {
   return (
-    <div>
-      <div className="bg-[#0A0A0A] text-white py-16 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="font-['Barlow_Condensed'] text-[10px] font-bold uppercase tracking-[4px] text-[#E31E24] mb-2">Juridisch</div>
-          <h1 className="font-['Barlow_Condensed'] font-black uppercase leading-none"
-            style={{ fontSize: 'clamp(3rem, 7vw, 5rem)' }}>
-            Privacyverklaring
-          </h1>
+    <>
+      <JsonLd data={graph(webPage('/privacy', 'Privacyverklaring', DESCRIPTION), breadcrumb([{ name: 'Privacyverklaring', path: '/privacy' }]))} />
+      <PageHeader crumbs={[{ name: 'Privacyverklaring', path: '/privacy' }]} eyebrow="Juridisch" title="Privacyverklaring" intro="Laatst bijgewerkt op 28 oktober 2026." />
+      <div className="container-site py-16">
+        <div className="prose-djm">
+          <h2>1. Wie zijn wij?</h2>
+          <p>
+            {BEDRIJF.naam} is een motorzaak aan de {BEDRIJF.straat}, {BEDRIJF.postcode} {BEDRIJF.plaats}. Je bereikt ons via {BEDRIJF.email} of {BEDRIJF.telefoon.label}. KvK-nummer: [in te vullen].
+          </p>
+
+          <h2>2. Welke gegevens verwerken we?</h2>
+          <p>Als je een formulier op deze website invult, verwerken we:</p>
+          <ul>
+            <li>je naam en telefoonnummer;</li>
+            <li>je voorkeursdatum voor een proefrit of werkplaatsafspraak;</li>
+            <li>gegevens over je motor die je zelf invult, zoals merk, model, bouwjaar, kilometerstand en kenteken;</li>
+            <li>een toelichting die je zelf meestuurt.</li>
+          </ul>
+
+          <h2>3. Waarvoor gebruiken we je gegevens?</h2>
+          <ul>
+            <li>om je terug te bellen over je aanvraag;</li>
+            <li>om een proefrit, werkplaatsafspraak of winterstalling in te plannen;</li>
+            <li>om een taxatie van je motor voor te bereiden.</li>
+          </ul>
+          <p>We gebruiken je gegevens niet voor marketing en we verkopen ze niet. We delen ze alleen met derden als de wet dat verplicht.</p>
+
+          <h2>4. Hoe lang bewaren we je gegevens?</h2>
+          <p>We bewaren je gegevens niet langer dan nodig voor het doel waarvoor je ze gaf. Afspraakgegevens bewaren we maximaal 2 jaar.</p>
+
+          <h2>5. Cookies en externe diensten</h2>
+          <p>
+            Deze website plaatst geen tracking- of advertentiecookies en gebruikt geen analysesoftware. Lettertypen staan op onze eigen server. Foto&apos;s van motoren en artikelen laden we via Cloudinary; de hoofdfoto op de homepage komt van Unsplash. Deze diensten zien bij het laden van een afbeelding je IP-adres, net als bij elke andere website.
+          </p>
+
+          <h2>6. Beveiliging</h2>
+          <p>
+            De gegevens uit de formulieren slaan we op bij Supabase, in een datacenter in de Europese Unie (Parijs). We nemen passende technische en organisatorische maatregelen om je gegevens te beschermen.
+          </p>
+
+          <h2>7. Je rechten</h2>
+          <p>Op grond van de AVG heb je het recht op:</p>
+          <ul>
+            <li><strong>inzage</strong> in de gegevens die we van je hebben;</li>
+            <li><strong>correctie</strong> van onjuiste gegevens;</li>
+            <li><strong>verwijdering</strong> van je gegevens;</li>
+            <li><strong>bezwaar</strong> tegen het verwerken van je gegevens.</li>
+          </ul>
+          <p>Mail naar {BEDRIJF.email} om een van deze rechten te gebruiken.</p>
+
+          <h2>8. Vragen en klachten</h2>
+          <p>
+            Heb je een vraag over deze verklaring, neem dan contact op via {BEDRIJF.email} of {BEDRIJF.telefoon.label}. Je kunt ook een klacht indienen bij de <a href="https://autoriteitpersoonsgegevens.nl" target="_blank" rel="noopener noreferrer">Autoriteit Persoonsgegevens</a>.
+          </p>
         </div>
       </div>
-
-      <div className="max-w-3xl mx-auto px-4 py-12 prose prose-sm text-[#444] leading-relaxed">
-        <p className="text-[#888] text-sm mb-8">Laatst bijgewerkt: 1 januari 2026</p>
-
-        <h2 className="font-['Barlow_Condensed'] font-black text-2xl uppercase mt-8 mb-3 text-[#1A1A1A]">1. Wie zijn wij?</h2>
-        <p>
-          De Jonge Motoren is een motordealer gevestigd aan de Stevinweg 14, 4691 SM Tholen, Nederland.
-          KvK-nummer: [in te vullen]. E-mail: info@dejongemotoren.nl. Telefoon: 0166-606090.
-        </p>
-
-        <h2 className="font-['Barlow_Condensed'] font-black text-2xl uppercase mt-8 mb-3 text-[#1A1A1A]">2. Welke gegevens verzamelen wij?</h2>
-        <p>Wij verzamelen de volgende persoonsgegevens wanneer u een formulier invult op onze website:</p>
-        <ul className="list-disc pl-5 space-y-1 my-3">
-          <li>Naam</li>
-          <li>Telefoonnummer</li>
-          <li>E-mailadres (optioneel)</li>
-          <li>Gewenste afspraakdatum</li>
-          <li>Informatie over uw motor (bij taxatieaanvragen)</li>
-        </ul>
-        <p>Wij plaatsen alleen functionele cookies die noodzakelijk zijn voor het goed functioneren van de website. Met uw toestemming plaatsen wij ook analytische cookies.</p>
-
-        <h2 className="font-['Barlow_Condensed'] font-black text-2xl uppercase mt-8 mb-3 text-[#1A1A1A]">3. Waarvoor gebruiken wij uw gegevens?</h2>
-        <ul className="list-disc pl-5 space-y-1 my-3">
-          <li>Om contact met u op te nemen naar aanleiding van uw aanvraag</li>
-          <li>Om een afspraak in te plannen voor een proefrit of servicebeurt</li>
-          <li>Om een taxatieaanvraag te verwerken</li>
-        </ul>
-        <p>Wij gebruiken uw gegevens niet voor marketingdoeleinden zonder uw toestemming en delen uw gegevens niet met derden, tenzij dit wettelijk verplicht is.</p>
-
-        <h2 className="font-['Barlow_Condensed'] font-black text-2xl uppercase mt-8 mb-3 text-[#1A1A1A]">4. Hoe lang bewaren wij uw gegevens?</h2>
-        <p>Wij bewaren uw persoonsgegevens niet langer dan noodzakelijk voor het doel waarvoor zij zijn verzameld. Afspraakgegevens worden maximaal 2 jaar bewaard.</p>
-
-        <h2 className="font-['Barlow_Condensed'] font-black text-2xl uppercase mt-8 mb-3 text-[#1A1A1A]">5. Uw rechten</h2>
-        <p>Op grond van de AVG heeft u de volgende rechten:</p>
-        <ul className="list-disc pl-5 space-y-1 my-3">
-          <li><strong>Recht op inzage</strong> — U kunt opvragen welke gegevens wij van u hebben.</li>
-          <li><strong>Recht op rectificatie</strong> — U kunt onjuiste gegevens laten corrigeren.</li>
-          <li><strong>Recht op verwijdering</strong> — U kunt verzoeken uw gegevens te verwijderen.</li>
-          <li><strong>Recht op bezwaar</strong> — U kunt bezwaar maken tegen verwerking van uw gegevens.</li>
-        </ul>
-        <p>Om gebruik te maken van deze rechten kunt u contact opnemen via info@dejongemotoren.nl.</p>
-
-        <h2 className="font-['Barlow_Condensed'] font-black text-2xl uppercase mt-8 mb-3 text-[#1A1A1A]">6. Beveiliging</h2>
-        <p>Wij nemen passende technische en organisatorische maatregelen om uw persoonsgegevens te beveiligen. Uw gegevens worden opgeslagen op beveiligde servers van Supabase (ISO 27001 gecertificeerd), gevestigd in de Europese Unie.</p>
-
-        <h2 className="font-['Barlow_Condensed'] font-black text-2xl uppercase mt-8 mb-3 text-[#1A1A1A]">7. Cookies</h2>
-        <p>Onze website gebruikt functionele cookies voor de werking van de website. Bij uw toestemming gebruiken wij ook analytische cookies (Google Analytics of vergelijkbaar) om het gebruik van onze website te meten. U kunt uw toestemming te allen tijde intrekken via de cookieinstellingen.</p>
-
-        <h2 className="font-['Barlow_Condensed'] font-black text-2xl uppercase mt-8 mb-3 text-[#1A1A1A]">8. Contact en klachten</h2>
-        <p>
-          Voor vragen over deze privacyverklaring kunt u contact opnemen via info@dejongemotoren.nl of 0166-606090.
-          U heeft ook het recht een klacht in te dienen bij de Autoriteit Persoonsgegevens (AP) via <strong>autoriteitpersoonsgegevens.nl</strong>.
-        </p>
-      </div>
-    </div>
+    </>
   );
 }

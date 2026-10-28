@@ -1,5 +1,6 @@
-import { createClient } from '@/utils/supabase/server';
-import { cookies } from 'next/headers';
+import { createClient } from '@supabase/supabase-js';
+
+export type ProductCategorie = 'onderdelen' | 'accessoires';
 
 export type Product = {
   id: string;
@@ -7,7 +8,7 @@ export type Product = {
   omschrijving: string | null;
   prijs: number | null;
   fotos: string[];
-  categorie: 'onderdelen' | 'accessoires';
+  categorie: ProductCategorie;
 };
 
 export function formatProductPrijs(prijs: number | null): string {
@@ -15,20 +16,19 @@ export function formatProductPrijs(prijs: number | null): string {
   return new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(prijs);
 }
 
-export async function getProducten(categorie?: 'onderdelen' | 'accessoires'): Promise<Product[]> {
-  try {
-    const cookieStore = await cookies();
-    const supabase = createClient(cookieStore);
-    let query = supabase
-      .from('producten')
-      .select('id, naam, omschrijving, prijs, fotos, categorie')
-      .eq('actief', true)
-      .is('verkocht_op', null)
-      .order('created_at', { ascending: false });
-    if (categorie) query = query.eq('categorie', categorie);
-    const { data } = await query;
-    return (data ?? []).map(p => ({ ...p, fotos: Array.isArray(p.fotos) ? p.fotos : [] }));
-  } catch {
-    return [];
-  }
+export async function getProducten(categorie?: ProductCategorie): Promise<Product[]> {
+  const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!);
+  let query = supabase
+    .from('producten')
+    .select('id, naam, omschrijving, prijs, fotos, categorie')
+    .eq('actief', true)
+    .is('verkocht_op', null)
+    .order('created_at', { ascending: false });
+  if (categorie) query = query.eq('categorie', categorie);
+  const { data } = await query;
+  return (data ?? []).map(p => ({
+    ...p,
+    categorie: p.categorie === 'accessoires' ? 'accessoires' : 'onderdelen',
+    fotos: Array.isArray(p.fotos) ? p.fotos.filter((f: unknown): f is string => typeof f === 'string') : [],
+  }));
 }

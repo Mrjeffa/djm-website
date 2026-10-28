@@ -1,40 +1,45 @@
-import { Package } from 'lucide-react';
-import { type Product, formatProductPrijs } from '@/lib/producten';
+import { MessageCircle, Package } from 'lucide-react';
+import { cld, cldSrcSet } from '@/lib/cloudinary';
+import { formatProductPrijs, type Product } from '@/lib/producten';
+import { whatsappUrl } from '@/lib/site';
 
 export default function ProductCard({ product }: { product: Product }) {
-  const foto = product.fotos?.[0];
+  const foto = product.fotos[0];
   return (
-    <div className="group bg-white border border-[#E5E5E5] hover:border-[#E31E24] transition-colors overflow-hidden flex flex-col">
-      <div className="relative aspect-[4/3] bg-[#F5F5F5] overflow-hidden">
+    <article className="flex flex-col border border-line bg-white">
+      <div className="relative aspect-square overflow-hidden bg-surface-2">
         {foto ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={foto}
+            src={cld(foto, 'f_auto,q_auto,c_fill,ar_1:1,w_600')}
+            srcSet={cldSrcSet(foto, [360, 600, 900], ',c_fill,ar_1:1')}
+            sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
             alt={product.naam}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            width={600}
+            height={600}
+            loading="lazy"
+            className="h-full w-full object-cover"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <Package size={40} className="text-[#DDD]" />
-          </div>
+          <div className="flex h-full items-center justify-center text-muted"><Package size={48} aria-hidden /></div>
         )}
-        <div className="absolute top-2 left-2">
-          <span className="bg-[#0A0A0A] text-white text-[9px] font-['Barlow_Condensed'] font-black uppercase tracking-[2px] px-2 py-1">
-            {product.categorie === 'onderdelen' ? 'Onderdeel' : 'Accessoire'}
-          </span>
-        </div>
+        <span className="absolute left-3 top-3 bg-ink px-2.5 py-1 font-display text-sm font-bold uppercase tracking-wide text-white">
+          {product.categorie === 'accessoires' ? 'Accessoire' : 'Onderdeel'}
+        </span>
       </div>
-      <div className="p-4 flex flex-col flex-1">
-        <h3 className="font-['Barlow_Condensed'] font-black text-lg uppercase leading-tight text-[#0A0A0A] mb-2 flex-1">
-          {product.naam}
-        </h3>
-        {product.omschrijving && (
-          <p className="text-xs text-[#888] leading-relaxed mb-3 line-clamp-2">{product.omschrijving}</p>
-        )}
-        <div className="font-['Barlow_Condensed'] font-black text-xl text-[#E31E24]">
-          {formatProductPrijs(product.prijs)}
-        </div>
+      <div className="flex flex-1 flex-col p-5">
+        <h2 className="text-xl">{product.naam}</h2>
+        {product.omschrijving && <p className="mt-2 line-clamp-3 text-[15px] text-muted">{product.omschrijving}</p>}
+        <p className="tabular mt-auto pt-4 font-display text-2xl font-extrabold">{formatProductPrijs(product.prijs)}</p>
+        <a
+          href={whatsappUrl(`Hoi, is dit artikel nog beschikbaar: ${product.naam}?`)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn btn-outline mt-4 w-full"
+        >
+          <MessageCircle size={18} aria-hidden /> Vraag beschikbaarheid
+        </a>
       </div>
-    </div>
+    </article>
   );
 }

@@ -1,76 +1,52 @@
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
 import type { Metadata } from 'next';
+import { OG_IMAGE } from '@/lib/site';
+import { ArrowRight } from 'lucide-react';
+import { BLOG_POSTS, datumNL } from '@/content/blog';
+import { ORG_ID, abs, breadcrumb, graph, webPage } from '@/lib/schema';
+import PageHeader from '@/components/PageHeader';
+import JsonLd from '@/components/JsonLd';
+
+const TITEL = 'Motortips en koopadvies';
+const DESCRIPTION = 'Tips van De Jonge Motoren over motor occasions kopen, beginnersmotoren, verzekeren en onderhoud dat je zelf kunt doen.';
 
 export const metadata: Metadata = {
-  title: 'Blog — Motortips & Advies | De Jonge Motoren',
-  description: 'Motortips, koopadvies en nieuws van De Jonge Motoren. Welke motor voor beginners, motorverzekering, onderhoudstips en meer.',
+  title: 'Blog: motortips en koopadvies',
+  description: DESCRIPTION,
+  alternates: { canonical: '/blog' },
+  openGraph: { title: TITEL, description: DESCRIPTION, url: '/blog', images: [OG_IMAGE] },
 };
 
-const posts = [
-  {
-    slug: 'welke-motor-voor-beginners',
-    titel: 'Welke motor is geschikt voor beginners in 2026?',
-    intro: 'Je hebt net je rijbewijs gehaald en je wilt weten welke motor bij je past. Hier zijn de beste opties voor A2 rijbewijs en waarom.',
-    datum: '3 juni 2026',
-    leestijd: '5 min',
-    categorie: 'Koopadvies',
-  },
-  {
-    slug: 'honda-vs-kawasaki-occasion',
-    titel: 'Honda CB500 vs Kawasaki Z650: welke occasion kies jij?',
-    intro: 'Twee populaire naked bikes in het occasion-segment. Beide betaalbaar, betrouwbaar en leuk om te rijden. Maar welke past bij jou?',
-    datum: '18 mei 2026',
-    leestijd: '7 min',
-    categorie: 'Vergelijking',
-  },
-  {
-    slug: 'motorverzekering-kosten-2026',
-    titel: 'Wat kost een motorverzekering in 2026?',
-    intro: 'Van WA tot allrisk: wat betaal je voor een motorverzekering? En wanneer is de extra dekking de moeite waard?',
-    datum: '2 mei 2026',
-    leestijd: '4 min',
-    categorie: 'Verzekering',
-  },
-  {
-    slug: 'motor-onderhoud-zelf-doen',
-    titel: '5 onderhoudstaken die je zelf kunt doen aan je motor',
-    intro: 'Je hoeft niet altijd naar de dealer. Met een beetje basiskennis kun je zelf een hoop besparen en je motor beter leren kennen.',
-    datum: '14 april 2026',
-    leestijd: '6 min',
-    categorie: 'Onderhoud',
-  },
-];
-
 export default function BlogPage() {
+  const posts = [...BLOG_POSTS].sort((a, b) => b.gepubliceerd.localeCompare(a.gepubliceerd));
   return (
-    <div className="max-w-6xl mx-auto px-4 py-12">
-      <div className="mb-10">
-        <div className="font-['Barlow_Condensed'] text-[10px] font-bold uppercase tracking-[3px] text-[#E31E24] mb-1">Tips & advies</div>
-        <h1 className="font-['Barlow_Condensed'] font-black text-5xl uppercase">Blog</h1>
-      </div>
+    <>
+      <JsonLd data={graph(
+        webPage('/blog', TITEL, DESCRIPTION, 'Blog', {
+          publisher: { '@id': ORG_ID },
+          blogPost: posts.map(p => ({ '@type': 'BlogPosting', headline: p.titel, url: abs(`/blog/${p.slug}`), datePublished: p.gepubliceerd })),
+        }),
+        breadcrumb([{ name: 'Blog', path: '/blog' }]),
+      )} />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {posts.map(post => (
-          <Link key={post.slug} href={`/blog/${post.slug}`} className="group border border-[#E5E5E5] hover:border-[#E31E24] transition-colors p-6">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="font-['Barlow_Condensed'] text-[10px] font-bold uppercase tracking-[2px] text-[#E31E24]">{post.categorie}</span>
-              <span className="text-[#E5E5E5]">·</span>
-              <span className="text-[#888] text-xs">{post.leestijd} lezen</span>
-            </div>
-            <h2 className="font-['Barlow_Condensed'] font-black text-2xl uppercase leading-tight mb-3 group-hover:text-[#E31E24] transition-colors">
-              {post.titel}
-            </h2>
-            <p className="text-[#888] text-sm leading-relaxed mb-4">{post.intro}</p>
-            <div className="flex justify-between items-center">
-              <span className="text-[#AAA] text-xs">{post.datum}</span>
-              <span className="font-['Barlow_Condensed'] font-bold uppercase text-sm text-[#E31E24] flex items-center gap-1">
-                Lees meer <ArrowRight size={12} />
-              </span>
-            </div>
-          </Link>
-        ))}
-      </div>
-    </div>
+      <PageHeader crumbs={[{ name: 'Blog', path: '/blog' }]} eyebrow="Blog" title={TITEL} intro={DESCRIPTION} />
+
+      <section className="py-16 lg:py-20">
+        <div className="container-site grid gap-6 md:grid-cols-2">
+          {posts.map(p => (
+            <article key={p.slug} className="group relative flex flex-col border border-line p-8 transition-colors hover:border-ink">
+              <p className="text-sm text-muted">
+                <span className="eyebrow text-xs">{p.categorie}</span> · <time dateTime={p.gepubliceerd}>{datumNL(p.gepubliceerd)}</time> · {p.leestijd} min lezen
+              </p>
+              <h2 className="mt-3 text-3xl">
+                <Link href={`/blog/${p.slug}`} className="after:absolute after:inset-0 group-hover:text-red">{p.titel}</Link>
+              </h2>
+              <p className="mt-3 flex-1 text-muted">{p.beschrijving}</p>
+              <span className="link-arrow mt-6">Lees verder <ArrowRight size={16} aria-hidden /></span>
+            </article>
+          ))}
+        </div>
+      </section>
+    </>
   );
 }

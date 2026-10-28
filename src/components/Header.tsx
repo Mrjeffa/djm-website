@@ -1,105 +1,95 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
-import { useState } from 'react';
-import { Phone, Menu, X } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { Menu, Phone, X } from 'lucide-react';
+import { BEDRIJF, HOOFDMENU } from '@/lib/site';
 
-const nav = [
-  { href: '/aanbod', label: 'Aanbod' },
-  { href: '/producten', label: 'Onderdelen' },
-  { href: '/motor-verkopen', label: 'Motor verkopen' },
-  { href: '/proefrit', label: 'Proefrit' },
-  { href: '/over-ons', label: 'Over ons' },
-  { href: '/contact', label: 'Contact' },
-];
-
-export default function Header() {
+export default function Header({ status, melding }: { status: string; melding?: string }) {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
+  useEffect(() => { setOpen(false); }, [pathname]);
+  useEffect(() => {
+    document.body.style.overflow = open ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [open]);
+
+  const actief = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
+
   return (
-    <header className="sticky top-0 z-50 bg-[#0A0A0A] border-b border-[#1A1A1A]">
-      <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
-        <Link href="/" aria-label="De Jonge Motoren — Home">
-          <Image
-            src="/logo.png"
-            alt="De Jonge Motoren"
-            width={140}
-            height={70}
-            className="h-10 w-auto"
-            priority
-          />
+    <header className="sticky top-0 z-40 bg-dark text-white">
+      {melding && (
+        <div className="bg-red px-4 py-2 text-center text-sm font-semibold">{melding}</div>
+      )}
+      <div className="hidden border-b border-line-dark lg:block">
+        <div className="container-site flex h-9 items-center justify-between text-[13px] text-muted-on-dark">
+          <span>{status}</span>
+          <span>{BEDRIJF.straat}, {BEDRIJF.plaats} · <a href={`tel:${BEDRIJF.mobiel.e164}`} className="hover:text-white">{BEDRIJF.mobiel.label}</a></span>
+        </div>
+      </div>
+      <div className="container-site flex h-16 items-center justify-between gap-6 lg:h-[72px]">
+        <Link href="/" className="shrink-0" aria-label={`${BEDRIJF.naam}, naar de homepage`}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo-djm.webp" alt={BEDRIJF.naam} width={560} height={234} className="h-11 w-auto lg:h-12" />
         </Link>
 
-        <nav className="hidden lg:flex items-center gap-0.5">
-          {nav.map(({ href, label }) => (
-            <Link
-              key={href}
-              href={href}
-              className="font-['Barlow_Condensed'] text-sm font-bold uppercase tracking-wide px-3 py-2 text-[#AAA] hover:text-white transition-colors"
-            >
-              {label}
-            </Link>
-          ))}
+        <nav aria-label="Hoofdmenu" className="hidden lg:block">
+          <ul className="flex items-center gap-1">
+            {HOOFDMENU.map(({ href, label }) => (
+              <li key={href}>
+                <Link
+                  href={href}
+                  aria-current={actief(href) ? 'page' : undefined}
+                  className={`relative block px-3 py-2 font-display text-[17px] font-bold uppercase tracking-wide transition-colors ${
+                    actief(href) ? 'text-white after:absolute after:inset-x-3 after:-bottom-[15px] after:h-[3px] after:bg-red' : 'text-muted-on-dark hover:text-white'
+                  }`}
+                >
+                  {label}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </nav>
 
-        <div className="hidden md:flex items-center gap-2">
-          <a
-            href="tel:+310621908697"
-            className="flex items-center gap-1.5 text-[#AAA] hover:text-white font-['Barlow_Condensed'] font-bold text-sm uppercase tracking-wide transition-colors"
-          >
-            <Phone size={13} />
-            06-21908697
+        <div className="flex items-center gap-2">
+          <a href={`tel:${BEDRIJF.telefoon.e164}`} className="btn btn-primary hidden !min-h-11 !px-4 sm:inline-flex">
+            <Phone size={16} aria-hidden /> {BEDRIJF.telefoon.label}
           </a>
-          <span className="text-[#333]">|</span>
-          <a
-            href="tel:+31166606090"
-            className="flex items-center gap-1.5 bg-[#E31E24] text-white px-4 py-2 font-['Barlow_Condensed'] font-bold text-sm uppercase tracking-wide hover:bg-[#c01920] transition-colors"
+          <button
+            type="button"
+            className="inline-flex h-11 w-11 items-center justify-center lg:hidden"
+            onClick={() => setOpen(v => !v)}
+            aria-expanded={open}
+            aria-controls="mobiel-menu"
+            aria-label={open ? 'Menu sluiten' : 'Menu openen'}
           >
-            <Phone size={13} />
-            0166-606090
-          </a>
+            {open ? <X size={26} /> : <Menu size={26} />}
+          </button>
         </div>
-
-        <button
-          className="lg:hidden p-2 text-white"
-          onClick={() => setOpen(!open)}
-          aria-label={open ? 'Menu sluiten' : 'Menu openen'}
-          aria-expanded={open}
-        >
-          {open ? <X size={22} /> : <Menu size={22} />}
-        </button>
       </div>
 
       {open && (
-        <div className="lg:hidden border-t border-[#1A1A1A] bg-[#0A0A0A]">
-          <nav className="flex flex-col">
-            {nav.map(({ href, label }) => (
-              <Link
-                key={href}
-                href={href}
-                onClick={() => setOpen(false)}
-                className="font-['Barlow_Condensed'] font-bold uppercase tracking-wide px-4 py-3.5 border-b border-[#1A1A1A] text-[#AAA] hover:text-white hover:bg-[#111]"
-              >
-                {label}
-              </Link>
+        <nav id="mobiel-menu" aria-label="Mobiel menu" className="absolute inset-x-0 top-full h-[calc(100dvh-4rem)] overflow-y-auto border-t border-line-dark bg-dark lg:hidden">
+          <ul className="container-site py-4">
+            {[{ href: '/', label: 'Home' }, ...HOOFDMENU, { href: '/proefrit', label: 'Proefrit' }, { href: '/veelgestelde-vragen', label: 'Veelgestelde vragen' }].map(({ href, label }) => (
+              <li key={href} className="border-b border-line-dark">
+                <Link
+                  href={href}
+                  aria-current={pathname === href ? 'page' : undefined}
+                  className={`flex min-h-14 items-center font-display text-2xl font-bold uppercase ${pathname === href ? 'text-red-on-dark' : 'text-white'}`}
+                >
+                  {label}
+                </Link>
+              </li>
             ))}
-            <a
-              href="tel:+310621908697"
-              className="flex items-center gap-2 px-4 py-3.5 border-b border-[#1A1A1A] font-['Barlow_Condensed'] font-bold text-[#AAA] uppercase"
-            >
-              <Phone size={14} />
-              06-21908697
-            </a>
-            <a
-              href="tel:+31166606090"
-              className="flex items-center gap-2 px-4 py-3.5 font-['Barlow_Condensed'] font-bold text-[#E31E24] uppercase"
-            >
-              <Phone size={14} />
-              0166-606090
-            </a>
-          </nav>
-        </div>
+          </ul>
+          <div className="container-site space-y-3 pb-28 text-muted-on-dark">
+            <p>{status}</p>
+            <p>{BEDRIJF.straat}, {BEDRIJF.postcode} {BEDRIJF.plaats}</p>
+          </div>
+        </nav>
       )}
     </header>
   );
