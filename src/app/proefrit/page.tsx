@@ -1,81 +1,72 @@
-import ProefritForm from '@/components/ProefritForm';
+import Link from 'next/link';
+import type { Metadata } from 'next';
 import { getMotors } from '@/lib/motors';
 import { getInstellingen } from '@/lib/getInstellingen';
-import type { Metadata } from 'next';
+import { BEDRIJF, OG_IMAGE } from '@/lib/site';
+import { breadcrumb, graph, webPage } from '@/lib/schema';
+import PageHeader from '@/components/PageHeader';
+import ProefritForm from '@/components/forms/ProefritForm';
+import JsonLd from '@/components/JsonLd';
+
+const TITEL = 'Proefrit maken met een occasion';
+const DESCRIPTION = 'Plan een gratis proefrit met een occasion van De Jonge Motoren in Tholen. Neem je rijbewijs (A of A2) en eigen helm mee. Aanvragen kan online, telefonisch of via WhatsApp.';
 
 export const metadata: Metadata = {
-  title: 'Proefrit aanvragen',
-  description: 'Vraag een proefrit aan voor een occasion motor bij De Jonge Motoren in Tholen, Zeeland. Kies een motor uit ons aanbod en wij plannen een moment.',
+  title: TITEL,
+  description: DESCRIPTION,
+  alternates: { canonical: '/proefrit' },
+  openGraph: { title: TITEL, description: DESCRIPTION, url: '/proefrit', images: [OG_IMAGE] },
 };
 
-export const revalidate = 60;
-
-export default async function ProefritPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ motorId?: string; motorNaam?: string }>;
-}) {
-  const [params, motoren, instellingen] = await Promise.all([
-    searchParams,
-    getMotors(),
-    getInstellingen(),
-  ]);
+export default async function ProefritPage({ searchParams }: { searchParams: Promise<{ motorId?: string }> }) {
+  const [{ motorId }, motoren, inst] = await Promise.all([searchParams, getMotors(), getInstellingen()]);
 
   return (
-    <div>
-      <div className="bg-[#0A0A0A] text-white py-16 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="font-['Barlow_Condensed'] text-[10px] font-bold uppercase tracking-[4px] text-[#E31E24] mb-2">Kom langs</div>
-          <h1 className="font-['Barlow_Condensed'] font-black uppercase leading-none mb-4"
-            style={{ fontSize: 'clamp(3rem, 7vw, 6rem)' }}>
-            Proefrit aanvragen
-          </h1>
-          <p className="text-[#AAA] max-w-xl leading-relaxed">
-            Een motor koop je niet op basis van foto&apos;s. Kom langs, rij hem, voel of hij bij je past. Geen druk, geen verplichtingen.
-          </p>
-        </div>
-      </div>
+    <>
+      <JsonLd data={graph(
+        webPage('/proefrit', TITEL, DESCRIPTION),
+        breadcrumb([{ name: 'Proefrit', path: '/proefrit' }]),
+      )} />
 
-      <div className="max-w-6xl mx-auto px-4 py-12 grid grid-cols-1 lg:grid-cols-2 gap-12">
-        <div>
-          <h2 className="font-['Barlow_Condensed'] font-black text-3xl uppercase mb-6">Wat kun je verwachten?</h2>
-          <div className="space-y-4 text-sm text-[#555] leading-relaxed">
-            <p>Je vraagt een proefrit aan via het formulier hiernaast. We bellen je zo snel mogelijk terug om een moment af te spreken dat jou uitkomt.</p>
-            <p>Je komt langs in Tholen. Je rijdt de motor — op jouw tempo, zonder haast. Er is geen druk om te kopen.</p>
-            <p>Bevalt hij? Dan praten we over de prijs. Niet? Dan ga je gewoon weer naar huis. Zo simpel is het.</p>
-          </div>
+      <PageHeader crumbs={[{ name: 'Proefrit', path: '/proefrit' }]} eyebrow="Gratis en vrijblijvend" title={TITEL} intro={inst.content.proefrit_intro} />
 
-          <div className="mt-8 bg-[#F5F5F5] p-5 border border-[#E5E5E5]">
-            <div className="font-['Barlow_Condensed'] font-bold uppercase text-sm mb-3 text-[#888]">Praktisch</div>
-            <div className="space-y-2 text-sm text-[#555]">
-              <div><strong className="text-[#1A1A1A]">Locatie:</strong> Stevinweg 14, Tholen (Zeeland)</div>
-              <div><strong className="text-[#1A1A1A]">Rijbewijs:</strong> Geldig rijbewijs vereist (A of A2)</div>
-              <div><strong className="text-[#1A1A1A]">Helm:</strong> Neem eigen helm mee</div>
-              <div><strong className="text-[#1A1A1A]">Kosten:</strong> Gratis, vrijblijvend</div>
-              <div><strong className="text-[#1A1A1A]">Telefoon:</strong> <a href="tel:+31166606090" className="hover:text-[#E31E24] transition-colors">0166-606090</a></div>
+      <section className="py-16 lg:py-20">
+        <div className="container-site grid gap-12 lg:grid-cols-12">
+          <div className="lg:col-span-5">
+            <h2 className="text-[clamp(2rem,4vw,3rem)]">Wat neem je mee?</h2>
+            <table className="mt-6 w-full border-collapse text-left">
+              <tbody>
+                {[
+                  ['Rijbewijs', 'Een geldig motorrijbewijs dat past bij de motor (A of A2)'],
+                  ['Uitrusting', 'Je eigen helm, handschoenen en motorkleding'],
+                  ['Kosten', 'Gratis en zonder verplichting'],
+                  ['Locatie', `${BEDRIJF.straat}, ${BEDRIJF.plaats}`],
+                ].map(([k, v]) => (
+                  <tr key={k} className="border-b border-line">
+                    <th scope="row" className="w-1/3 py-3 pr-4 align-top font-semibold">{k}</th>
+                    <td className="py-3 text-muted">{v}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <h2 className="mt-12 text-3xl">Hoe gaat het?</h2>
+            <div className="prose-djm mt-4">
+              <p>Je vraagt de proefrit aan en wij bellen je om een moment af te spreken. Op de afgesproken dag staat de motor klaar en rij je op je eigen tempo een rondje. Bevalt de motor, dan bespreken we de koop. Bevalt hij niet, dan zoeken we samen verder.</p>
+              <p>Nog geen keuze gemaakt? Bekijk eerst de <Link href="/occasions">occasions</Link>.</p>
             </div>
           </div>
-
-          <div className="mt-6 bg-[#E31E24]/5 border border-[#E31E24]/20 p-5">
-            <p className="text-sm text-[#444] leading-relaxed">
-              <strong className="text-[#E31E24] font-['Barlow_Condensed'] uppercase text-xs tracking-widest block mb-2">Liever direct bellen?</strong>
-              Bel ons op <a href="tel:+31166606090" className="font-bold text-[#1A1A1A] hover:text-[#E31E24] transition-colors">0166-606090</a> — dan plannen we meteen iets in.
-            </p>
+          <div className="border border-line bg-surface-2 p-6 sm:p-8 lg:col-span-7">
+            <h2 className="text-2xl">Vraag een proefrit aan</h2>
+            <div className="mt-6">
+              <ProefritForm
+                motorId={motoren.some(m => m.id === motorId) ? motorId : undefined}
+                motoren={motoren.map(m => ({ id: m.id, naam: m.naam, bouwjaar: m.bouwjaar }))}
+                instellingen={inst}
+              />
+            </div>
           </div>
         </div>
-
-        <div>
-          <h2 className="font-['Barlow_Condensed'] font-black text-3xl uppercase mb-6">Plan jouw proefrit</h2>
-          <div className="border border-[#E5E5E5] p-6">
-            <ProefritForm
-              motorId={params.motorId}
-              motorNaam={params.motorNaam}
-              motoren={motoren}
-              instellingen={instellingen}
-            />
-          </div>
-        </div>
-      </div>
-    </div>
+      </section>
+    </>
   );
 }

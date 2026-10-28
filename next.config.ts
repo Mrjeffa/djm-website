@@ -1,12 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  images: {
-    remotePatterns: [
-      { protocol: 'https', hostname: 'images.unsplash.com' },
-      { protocol: 'https', hostname: '*.supabase.co' },
-      { protocol: 'https', hostname: 'res.cloudinary.com' },
-    ],
+  async redirects() {
+    return [
+      { source: '/aanbod', destination: '/occasions', permanent: true },
+      { source: '/producten', destination: '/onderdelen', permanent: true },
+      { source: '/blog/motorverzekering-kosten-2026', destination: '/blog/motorverzekering-kosten', permanent: true },
+    ];
   },
 };
 

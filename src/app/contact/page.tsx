@@ -1,123 +1,108 @@
-import { Phone, Mail, MapPin, Smartphone, Clock, Wrench, MessageCircle } from 'lucide-react';
-import ServiceForm from '@/components/ServiceForm';
-import { getInstellingen } from '@/lib/getInstellingen';
-import { formatOpeningsTijden } from '@/lib/instellingen';
+import Link from 'next/link';
 import type { Metadata } from 'next';
+import { Clock, Mail, MapPin, MessageCircle, Phone } from 'lucide-react';
+import { getInstellingen } from '@/lib/getInstellingen';
+import { formatOpeningsTijden, vandaagStatus } from '@/lib/instellingen';
+import { BEDRIJF, whatsappUrl, OG_IMAGE } from '@/lib/site';
+import { breadcrumb, graph, webPage, ORG_ID } from '@/lib/schema';
+import PageHeader from '@/components/PageHeader';
+import JsonLd from '@/components/JsonLd';
+
+const TITEL = 'Contact en route';
+const DESCRIPTION = 'Contact met De Jonge Motoren, Stevinweg 14 in Tholen. Bel 0166-606090, app 06-21908697 of mail info@dejongemotoren.nl. Bekijk de openingstijden en plan je route.';
 
 export const metadata: Metadata = {
-  title: 'Contact & Service',
-  description: 'Neem contact op met De Jonge Motoren in Tholen. Bel 0166-606090, stuur een WhatsApp of vraag online een servicebeurt aan.',
+  title: 'Contact, openingstijden en route',
+  description: DESCRIPTION,
+  alternates: { canonical: '/contact' },
+  openGraph: { title: TITEL, description: DESCRIPTION, url: '/contact', images: [OG_IMAGE] },
 };
 
-export const revalidate = 60;
-
 export default async function ContactPage() {
-  const instellingen = await getInstellingen();
-  const tijden = formatOpeningsTijden(instellingen);
+  const inst = await getInstellingen();
+  const tijden = formatOpeningsTijden(inst);
+
+  const kanalen = [
+    { icon: Phone, label: 'Bellen', waarde: BEDRIJF.telefoon.label, href: `tel:${BEDRIJF.telefoon.e164}`, tekst: 'Tijdens openingstijden' },
+    { icon: MessageCircle, label: 'WhatsApp', waarde: BEDRIJF.mobiel.label, href: whatsappUrl('Hoi De Jonge Motoren, '), tekst: 'Ook voor foto\'s van je motor' },
+    { icon: Mail, label: 'E-mail', waarde: BEDRIJF.email, href: `mailto:${BEDRIJF.email}`, tekst: 'Voor uitgebreide vragen' },
+  ];
 
   return (
-    <div>
-      <div className="bg-[#0A0A0A] text-white py-16 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="font-['Barlow_Condensed'] text-[10px] font-bold uppercase tracking-[4px] text-[#E31E24] mb-2">Kom in contact</div>
-          <h1 className="font-['Barlow_Condensed'] font-black uppercase leading-none mb-4"
-            style={{ fontSize: 'clamp(3rem, 7vw, 6rem)' }}>
-            Contact
-          </h1>
-          <p className="text-[#AAA] max-w-xl leading-relaxed">
-            Vraag? Interesse in een motor? Bel, mail of stuur een bericht — we reageren altijd snel.
-          </p>
-        </div>
-      </div>
+    <>
+      <JsonLd data={graph(
+        webPage('/contact', TITEL, DESCRIPTION, 'ContactPage', { mainEntity: { '@id': ORG_ID } }),
+        breadcrumb([{ name: 'Contact', path: '/contact' }]),
+      )} />
 
-      {instellingen.opmerking && (
-        <div className="bg-[#E31E24]/10 border-b border-[#E31E24]/20 px-4 py-3">
-          <div className="max-w-6xl mx-auto text-sm text-[#E31E24] font-['Barlow_Condensed'] font-bold uppercase tracking-wide">
-            {instellingen.opmerking}
-          </div>
-        </div>
-      )}
+      <PageHeader
+        crumbs={[{ name: 'Contact', path: '/contact' }]}
+        eyebrow="Contact"
+        title={TITEL}
+        intro={`${BEDRIJF.naam} zit aan de ${BEDRIJF.straat}, ${BEDRIJF.postcode} ${BEDRIJF.plaats}. Bel, app of mail ons, of kom langs tijdens openingstijden.`}
+      />
 
-      <div className="max-w-6xl mx-auto px-4 py-12 grid grid-cols-1 lg:grid-cols-2 gap-12">
-        <div>
-          <h2 className="font-['Barlow_Condensed'] font-black text-3xl uppercase mb-6">Bereikbaarheid</h2>
-
-          <div className="space-y-3 mb-8">
-            {[
-              { icon: Phone, label: 'Telefoon', value: '0166-606090', href: 'tel:+31166606090' },
-              { icon: Smartphone, label: 'GSM', value: '06-21908697', href: 'tel:+31621908697' },
-              { icon: MessageCircle, label: 'WhatsApp', value: '06-21908697', href: 'https://wa.me/31621908697' },
-              { icon: Mail, label: 'E-mail', value: 'info@dejongemotoren.nl', href: 'mailto:info@dejongemotoren.nl' },
-              { icon: MapPin, label: 'Adres', value: 'Stevinweg 14 · 4691 SM Tholen', href: 'https://maps.google.com/?q=Stevinweg+14+4691+SM+Tholen' },
-            ].map(({ icon: Icon, label, value, href }) => (
-              <div key={label} className="flex items-start gap-3 p-4 border border-[#E5E5E5]">
-                <div className="bg-[#E31E24]/10 p-2 shrink-0">
-                  <Icon size={18} className="text-[#E31E24]" />
-                </div>
-                <div>
-                  <div className="text-xs text-[#888] font-['Barlow_Condensed'] uppercase tracking-wide mb-0.5">{label}</div>
+      <section className="py-16 lg:py-20">
+        <div className="container-site grid gap-12 lg:grid-cols-12">
+          <div className="lg:col-span-7">
+            <h2 className="text-[clamp(2rem,4vw,3rem)]">Neem contact op</h2>
+            <ul className="mt-8 grid gap-4 sm:grid-cols-3">
+              {kanalen.map(({ icon: Icon, label, waarde, href, tekst }) => (
+                <li key={label}>
                   <a href={href} target={href.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer"
-                    className="font-['Barlow_Condensed'] font-bold hover:text-[#E31E24] transition-colors">
-                    {value}
+                    className="flex h-full flex-col border border-line p-6 transition-colors hover:border-ink">
+                    <Icon size={26} className="text-red" aria-hidden />
+                    <span className="mt-4 font-display text-xl font-bold uppercase">{label}</span>
+                    <span className="mt-1 break-all font-semibold">{waarde}</span>
+                    <span className="mt-2 text-sm text-muted">{tekst}</span>
                   </a>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="bg-[#F5F5F5] p-5 border border-[#E5E5E5]">
-            <div className="flex items-center gap-2 mb-3">
-              <Clock size={14} className="text-[#E31E24]" />
-              <div className="font-['Barlow_Condensed'] font-bold uppercase text-sm text-[#888]">Openingstijden</div>
-            </div>
-            <div className="space-y-2 text-sm text-[#555]">
-              {tijden.map(({ label, waarde }) => (
-                <div key={label} className="flex justify-between gap-4">
-                  <span className={waarde === 'Gesloten' ? 'text-[#AAA]' : 'font-medium text-[#1A1A1A]'}>{label}</span>
-                  <span className={waarde === 'Gesloten' ? 'text-[#CCC]' : ''}>{waarde}</span>
-                </div>
+                </li>
               ))}
-            </div>
-            <p className="text-xs text-[#888] mt-3 border-t border-[#E5E5E5] pt-3">
-              Buiten openingstijden? Bel of WhatsApp ons — we zijn flexibel.
-            </p>
-          </div>
-        </div>
+            </ul>
 
-        <div>
-          <div className="flex items-center gap-3 mb-4">
-            <div className="bg-[#E31E24] p-2">
-              <Wrench size={18} className="text-white" />
-            </div>
-            <h2 className="font-['Barlow_Condensed'] font-black text-3xl uppercase">Service aanvragen</h2>
+            <h2 className="mt-14 text-3xl">Waar kun je mee terecht?</h2>
+            <ul className="mt-6 divide-y divide-line border-y border-line">
+              {[
+                ['Een motor kopen of een proefrit plannen', '/occasions'],
+                ['Je motor laten taxeren en verkopen', '/motor-verkopen'],
+                ['Onderhoud, reparatie of een aankoopkeuring', '/werkplaats'],
+                ['Winterstalling voor je motor', '/winterstalling'],
+                ['Een onderdeel of accessoire zoeken', '/onderdelen'],
+              ].map(([tekst, href]) => (
+                <li key={href}>
+                  <Link href={href} className="flex min-h-14 items-center justify-between gap-4 py-3 font-semibold hover:text-red">
+                    {tekst} <span aria-hidden>→</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
-          <p className="text-sm text-[#666] leading-relaxed mb-5">
-            Nieuwe klant en je motor moet worden onderhouden of gerepareerd? Vul het formulier in — we plannen een afspraak met je in.
-          </p>
-          <div className="border border-[#E5E5E5] p-6">
-            <ServiceForm instellingen={instellingen} />
-          </div>
-          <p className="text-xs text-[#AAA] mt-3 text-center">
-            Bestaande klant? Maak je afspraak via de <strong>DJM app</strong>.
-          </p>
-        </div>
-      </div>
 
-      <div className="bg-[#F5F5F5] border-t border-[#E5E5E5] py-10 px-4">
-        <div className="max-w-6xl mx-auto text-center">
-          <div className="font-['Barlow_Condensed'] text-[10px] font-bold uppercase tracking-[4px] text-[#E31E24] mb-2">Hoe je ons vindt</div>
-          <p className="font-['Barlow_Condensed'] font-black text-2xl uppercase mb-1">Stevinweg 14 · Tholen</p>
-          <p className="text-sm text-[#888] mb-6">4691 SM Tholen, Zeeland</p>
-          <a
-            href="https://maps.google.com/?q=Stevinweg+14+4691+SM+Tholen"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 font-['Barlow_Condensed'] font-bold uppercase text-sm tracking-widest bg-[#E31E24] text-white px-6 py-3 hover:bg-[#c01920] transition-colors"
-          >
-            <MapPin size={14} /> Open in Google Maps
-          </a>
+          <aside className="space-y-6 lg:col-span-5">
+            <div className="on-dark bg-dark p-8 text-white">
+              <h2 className="flex items-center gap-3 text-3xl"><Clock size={26} className="text-red-on-dark" aria-hidden /> Openingstijden</h2>
+              <p className="mt-3 text-muted-on-dark">{vandaagStatus(inst)}</p>
+              <dl className="mt-6 space-y-2 border-t border-line-dark pt-6">
+                {tijden.map(t => (
+                  <div key={t.label} className="flex justify-between gap-4">
+                    <dt className={t.gesloten ? 'text-muted-on-dark' : ''}>{t.label}</dt>
+                    <dd className="tabular text-muted-on-dark">{t.waarde}</dd>
+                  </div>
+                ))}
+              </dl>
+              <p className="mt-6 text-sm text-muted-on-dark">Buiten openingstijden kom je langs op afspraak.</p>
+            </div>
+            <div className="border border-line p-8">
+              <h2 className="flex items-center gap-3 text-3xl"><MapPin size={26} className="text-red" aria-hidden /> Adres</h2>
+              <address className="mt-4 not-italic text-lg">
+                {BEDRIJF.naam}<br />{BEDRIJF.straat}<br />{BEDRIJF.postcode} {BEDRIJF.plaats}
+              </address>
+              <p className="mt-3 text-sm text-muted">In Tholen, Zeeland, vlak bij Bergen op Zoom.</p>
+              <a href={BEDRIJF.mapsUrl} target="_blank" rel="noopener noreferrer" className="btn btn-primary mt-6 w-full">Plan je route</a>
+            </div>
+          </aside>
         </div>
-      </div>
-    </div>
+      </section>
+    </>
   );
 }

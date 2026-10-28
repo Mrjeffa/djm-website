@@ -1,91 +1,52 @@
-import type { Metadata } from "next";
-import "./globals.css";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import WhatsAppButton from "@/components/WhatsAppButton";
-import CookieBanner from "@/components/CookieBanner";
-import { getInstellingen } from "@/lib/getInstellingen";
+import type { Metadata, Viewport } from 'next';
+import { Barlow, Barlow_Condensed } from 'next/font/google';
+import './globals.css';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+import MobileContactBar from '@/components/MobileContactBar';
+import JsonLd from '@/components/JsonLd';
+import { getInstellingen } from '@/lib/getInstellingen';
+import { vandaagStatus } from '@/lib/instellingen';
+import { businessNodes, graph } from '@/lib/schema';
+import { BEDRIJF, SITE_URL } from '@/lib/site';
 
 // Cloudflare Pages (next-on-pages) requires every dynamic route, including /_not-found, to run on the edge.
-export const runtime = "edge";
+export const runtime = 'edge';
+// Stock, prices and opening hours come from Supabase; next-on-pages has no ISR, so render per request.
+export const dynamic = 'force-dynamic';
+
+const barlow = Barlow({ subsets: ['latin'], weight: ['400', '500', '600', '700'], variable: '--font-barlow', display: 'swap' });
+const barlowCondensed = Barlow_Condensed({ subsets: ['latin'], weight: ['600', '700', '800'], variable: '--font-barlow-condensed', display: 'swap' });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.dejongemotoren.nl"),
-  alternates: { canonical: "./" },
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "De Jonge Motoren — Occasion motors kopen in Zeeland",
-    template: "%s | De Jonge Motoren",
+    default: 'De Jonge Motoren | Motor occasions en werkplaats in Tholen',
+    template: '%s | De Jonge Motoren',
   },
-  description: "Occasion motors kopen, verkopen en proefrijden in Tholen, Zeeland. De Jonge Motoren — al 25 jaar eerlijk, persoonlijk advies. BMW, Honda, Kawasaki, Yamaha en meer.",
-  keywords: "occasion motor kopen, tweedehands motorfiets, motordealer Zeeland, motordealer Tholen, motor verkopen, proefrit motor",
-  openGraph: {
-    type: "website",
-    locale: "nl_NL",
-    siteName: "De Jonge Motoren",
-  },
+  description: 'Motorzaak in Tholen, Zeeland. Motor occasions kopen, je motor verkopen, onderhoud, winterstalling en onderdelen. Al 25 jaar aan de Stevinweg 14.',
+  applicationName: BEDRIJF.naam,
+  formatDetection: { telephone: false },
+  openGraph: { type: 'website', locale: 'nl_NL', siteName: BEDRIJF.naam },
+  twitter: { card: 'summary_large_image' },
 };
 
-const DAG_EN: Record<string, string> = {
-  ma: 'Monday', di: 'Tuesday', wo: 'Wednesday',
-  do: 'Thursday', vr: 'Friday', za: 'Saturday', zo: 'Sunday',
-};
+export const viewport: Viewport = { themeColor: '#0B0B0C' };
 
-const schemaOrg = {
-  "@context": "https://schema.org",
-  "@type": "MotorcycleDealer",
-  "name": "De Jonge Motoren",
-  "url": "https://www.dejongemotoren.nl",
-  "telephone": "+31166606090",
-  "email": "info@dejongemotoren.nl",
-  "address": {
-    "@type": "PostalAddress",
-    "streetAddress": "Stevinweg 14",
-    "addressLocality": "Tholen",
-    "postalCode": "4691 SM",
-    "addressCountry": "NL",
-  },
-  "geo": {
-    "@type": "GeoCoordinates",
-    "latitude": 51.5358,
-    "longitude": 4.2158,
-  },
-  "priceRange": "€€",
-  "description": "Occasion motors kopen, verkopen en proefrijden in Tholen, Zeeland. Al 25 jaar eerlijk en persoonlijk advies.",
-};
-
-export default async function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const instellingen = await getInstellingen();
 
-  const schemaMetOpeningstijden = {
-    ...schemaOrg,
-    openingHoursSpecification: Object.entries(instellingen.openingstijden)
-      .filter(([, t]) => !t.gesloten && t.open && t.sluit)
-      .map(([dag, t]) => ({
-        "@type": "OpeningHoursSpecification",
-        "dayOfWeek": DAG_EN[dag],
-        "opens": t.open,
-        "closes": t.sluit,
-      })),
-  };
-
   return (
-    <html lang="nl" className="h-full antialiased">
-      <head>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaMetOpeningstijden) }}
-        />
-      </head>
-      <body className="min-h-full flex flex-col">
-        <Header />
-        <main className="flex-1">{children}</main>
+    <html lang="nl" className={`${barlow.variable} ${barlowCondensed.variable}`}>
+      <body className="flex min-h-dvh flex-col antialiased">
+        <a href="#inhoud" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:bg-white focus:px-4 focus:py-2 focus:text-ink">
+          Naar de inhoud
+        </a>
+        <JsonLd data={graph(businessNodes(instellingen))} />
+        <Header status={vandaagStatus(instellingen)} melding={instellingen.opmerking || undefined} />
+        <main id="inhoud" className="flex-1">{children}</main>
         <Footer instellingen={instellingen} />
-        <WhatsAppButton />
-        <CookieBanner />
+        <MobileContactBar />
       </body>
     </html>
   );
