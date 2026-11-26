@@ -121,15 +121,18 @@ export function motorNode(m: Motor): Node {
     ...(m.fotos.length > 0 && { image: m.fotos.slice(0, 5) }),
     ...(m.beschrijving && { description: m.beschrijving }),
     url: abs(motorPad(m)),
-    offers: {
-      '@type': 'Offer',
-      price: m.prijs,
-      priceCurrency: 'EUR',
-      availability: m.status === 'gereserveerd' ? 'https://schema.org/LimitedAvailability' : 'https://schema.org/InStock',
-      itemCondition: 'https://schema.org/UsedCondition',
-      url: abs(motorPad(m)),
-      seller: { '@id': ORG_ID },
-    },
+    // Verkocht: geen aanbieding meer (en geen prijs)
+    ...(m.status !== 'verkocht' && {
+      offers: {
+        '@type': 'Offer',
+        price: m.prijs,
+        priceCurrency: 'EUR',
+        availability: m.status === 'gereserveerd' ? 'https://schema.org/LimitedAvailability' : 'https://schema.org/InStock',
+        itemCondition: 'https://schema.org/UsedCondition',
+        url: abs(motorPad(m)),
+        seller: { '@id': ORG_ID },
+      },
+    }),
   };
 }
 

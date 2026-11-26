@@ -2,7 +2,7 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { notFound, permanentRedirect } from 'next/navigation';
 import { Bike, MessageCircle, Phone } from 'lucide-react';
-import { formatKm, formatPrijs, getMotorBySlug, getMotors, motorPad, type Motor } from '@/lib/motors';
+import { formatKm, formatPrijs, getMotorBySlug, getMotors, isVerkocht, motorPad, type Motor } from '@/lib/motors';
 import { getInstellingen } from '@/lib/getInstellingen';
 import { cld, cldSrcSet } from '@/lib/cloudinary';
 import { BEDRIJF, OG_IMAGE, whatsappUrl } from '@/lib/site';
@@ -15,10 +15,11 @@ import JsonLd from '@/components/JsonLd';
 type Props = { params: Promise<{ slug: string }> };
 
 function titel(m: Motor) {
-  return `${m.naam} ${m.bouwjaar} occasion kopen`;
+  return isVerkocht(m) ? `${m.naam} ${m.bouwjaar} (verkocht)` : `${m.naam} ${m.bouwjaar} occasion kopen`;
 }
 
 function omschrijving(m: Motor) {
+  if (isVerkocht(m)) return `Deze ${m.naam} uit ${m.bouwjaar} is verkocht door ${BEDRIJF.naam} in ${BEDRIJF.plaats}. Bekijk de occasions die nu te koop staan.`;
   const basis = `${m.naam} uit ${m.bouwjaar} met ${formatKm(m.km, m.kmEenheid)} voor ${formatPrijs(m.prijs)} bij ${BEDRIJF.naam} in ${BEDRIJF.plaats}.`;
   return m.beschrijving ? `${basis} ${m.beschrijving}`.slice(0, 158) : `${basis} Plan een gratis proefrit.`;
 }
@@ -30,8 +31,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: titel(m),
     description: omschrijving(m),
     alternates: { canonical: motorPad(m) },
+    // Verkocht: pagina verdwijnt na 30 dagen, dus niet in zoekmachines opnemen
+    robots: isVerkocht(m) ? { index: false, follow: true } : undefined,
     openGraph: {
-      title: `${m.naam} (${m.bouwjaar}) | ${formatPrijs(m.prijs)}`,
+      title: isVerkocht(m) ? `${m.naam} (${m.bouwjaar}) | Verkocht` : `${m.naam} (${m.bouwjaar}) | ${formatPrijs(m.prijs)}`,
       description: omschrijving(m),
       url: motorPad(m),
       images: m.fotos[0] ? [{ url: cld(m.fotos[0], 'f_jpg,q_auto,c_fill,w_1200,h_630'), width: 1200, height: 630, alt: `${m.naam} ${m.bouwjaar}` }] : [OG_IMAGE],
@@ -51,6 +54,7 @@ export default async function OccasionPage({ params }: Props) {
     .sort((a, b) => Number(b.categorie === m.categorie) - Number(a.categorie === m.categorie) || Math.abs(a.prijs - m.prijs) - Math.abs(b.prijs - m.prijs))
     .slice(0, 3);
   const naamJaar = `${m.naam} (${m.bouwjaar})`;
+  const verkocht = isVerkocht(m);
 
   const specs: [string, string | null][] = [
     ['Merk', m.merk],
@@ -61,8 +65,8 @@ export default async function OccasionPage({ params }: Props) {
     ['Uitvoering', m.uitvoering],
     ['Vermogen', m.vermogen],
     ['Kleur', m.kleur],
-    ['Prijs', formatPrijs(m.prijs)],
-    ['Status', m.status === 'gereserveerd' ? 'Gereserveerd' : 'Beschikbaar'],
+    ['Prijs', verkocht ? null : formatPrijs(m.prijs)],
+    ['Status', verkocht ? 'Verkocht' : m.status === 'gereserveerd' ? 'Gereserveerd' : 'Beschikbaar'],
   ];
 
   return (
@@ -93,7 +97,7 @@ export default async function OccasionPage({ params }: Props) {
                       height={i === 0 ? 825 : 600}
                       loading={i === 0 ? 'eager' : 'lazy'}
                       fetchPriority={i === 0 ? 'high' : undefined}
-                      className={`w-full object-cover ${i === 0 ? 'aspect-[4/3]' : 'aspect-square'}`}
+                      className={`w-full object-cover ${i === 0 ? 'aspect-[4/3]' : 'aspect-square'} ${verkocht ? 'opacity-80 grayscale' : ''}`}
                     />
                   </a>
                 ))}
@@ -107,7 +111,12 @@ export default async function OccasionPage({ params }: Props) {
             <div className="lg:sticky lg:top-28">
               <p className="eyebrow">{[m.categorie, m.bouwjaar].filter(Boolean).join(' · ')}</p>
               <h1 className="mt-2 text-[clamp(2.25rem,4vw,3.25rem)]">{m.naam}</h1>
-              <p className="tabular mt-3 font-display text-5xl font-extrabold">{formatPrijs(m.prijs)}</p>
+              <p className={`tabular mt-3 font-display text-5xl font-extrabold ${verkocht ? 'text-muted' : ''}`}>{verkocht ? 'Verkocht' : formatPrijs(m.prijs)}</p>
+              {verkocht && (
+                <p className="mt-4 border-l-4 border-ink bg-surface-2 px-4 py-3 text-sm">
+                  Deze motor is <strong>verkocht</strong>. Zoek je iets vergelijkbaars? Bekijk de occasions die nu te koop staan, of geef door wat je zoekt.
+                </p>
+              )}
               {m.status === 'gereserveerd' && (
                 <p className="mt-4 border-l-4 border-amber bg-surface-2 px-4 py-3 text-sm">
                   Deze motor is <strong>gereserveerd</strong>. Bel of app ons om te horen of hij weer beschikbaar komt.
@@ -119,18 +128,25 @@ export default async function OccasionPage({ params }: Props) {
                 ))}
               </ul>
               <div className="mt-6 grid grid-cols-2 gap-3">
-                <a href={whatsappUrl(`Hoi, ik heb interesse in de ${naamJaar} van ${formatPrijs(m.prijs)}.`)} target="_blank" rel="noopener noreferrer" className="btn btn-whatsapp">
+                <a href={whatsappUrl(verkocht ? `Hoi, ik zag dat de ${naamJaar} verkocht is. Ik zoek iets vergelijkbaars.` : `Hoi, ik heb interesse in de ${naamJaar} van ${formatPrijs(m.prijs)}.`)} target="_blank" rel="noopener noreferrer" className="btn btn-whatsapp">
                   <MessageCircle size={18} aria-hidden /> WhatsApp
                 </a>
                 <a href={`tel:${BEDRIJF.telefoon.e164}`} className="btn btn-outline">
                   <Phone size={18} aria-hidden /> Bellen
                 </a>
               </div>
-              <div className="mt-8 border border-line bg-surface-2 p-6">
-                <h2 className="text-2xl">Plan een proefrit</h2>
-                <p className="mt-1 text-sm text-muted">Gratis, met je eigen helm en een geldig rijbewijs.</p>
-                <div className="mt-5"><ProefritForm motorId={m.id} motorNaam={naamJaar} instellingen={inst} /></div>
-              </div>
+              {verkocht ? (
+                <div className="mt-8 flex flex-col gap-3 border border-line bg-surface-2 p-6">
+                  <Link href="/occasions" className="btn btn-primary">Bekijk de occasions</Link>
+                  <Link href="/contact" className="btn btn-outline">Geef je wens door</Link>
+                </div>
+              ) : (
+                <div className="mt-8 border border-line bg-surface-2 p-6">
+                  <h2 className="text-2xl">Plan een proefrit</h2>
+                  <p className="mt-1 text-sm text-muted">Gratis, met je eigen helm en een geldig rijbewijs.</p>
+                  <div className="mt-5"><ProefritForm motorId={m.id} motorNaam={naamJaar} instellingen={inst} /></div>
+                </div>
+              )}
             </div>
           </aside>
         </div>

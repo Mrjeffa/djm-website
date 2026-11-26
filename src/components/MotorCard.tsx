@@ -1,11 +1,12 @@
 import Link from 'next/link';
 import { Bike } from 'lucide-react';
 import { cld, cldSrcSet } from '@/lib/cloudinary';
-import { formatKm, formatPrijs, isNieuwBinnen, motorPad, type Motor } from '@/lib/motors';
+import { formatKm, formatPrijs, isNieuwBinnen, isVerkocht, motorPad, type Motor } from '@/lib/motors';
 
 export default function MotorCard({ motor, prioriteit = false, kop = 'h3' }: { motor: Motor; prioriteit?: boolean; kop?: 'h2' | 'h3' }) {
   const Kop = kop;
   const foto = motor.fotos[0];
+  const verkocht = isVerkocht(motor);
   return (
     <article className="group relative flex flex-col border border-line bg-white transition-colors duration-150 hover:border-ink">
       <div className="relative aspect-[4/3] overflow-hidden bg-surface-2">
@@ -20,16 +21,19 @@ export default function MotorCard({ motor, prioriteit = false, kop = 'h3' }: { m
             height={480}
             loading={prioriteit ? 'eager' : 'lazy'}
             fetchPriority={prioriteit ? 'high' : undefined}
-            className="h-full w-full object-cover"
+            className={`h-full w-full object-cover ${verkocht ? 'opacity-70 grayscale' : ''}`}
           />
         ) : (
           <div className="flex h-full items-center justify-center text-muted"><Bike size={56} aria-hidden /></div>
         )}
         <div className="absolute left-3 top-3 flex gap-2">
+          {verkocht && (
+            <span className="bg-ink px-2.5 py-1 font-display text-sm font-bold uppercase tracking-wide text-white">Verkocht</span>
+          )}
           {motor.status === 'gereserveerd' && (
             <span className="bg-amber px-2.5 py-1 font-display text-sm font-bold uppercase tracking-wide text-white">Gereserveerd</span>
           )}
-          {motor.status !== 'gereserveerd' && isNieuwBinnen(motor.datumIn) && (
+          {motor.status === 'beschikbaar' && isNieuwBinnen(motor.datumIn) && (
             <span className="bg-red px-2.5 py-1 font-display text-sm font-bold uppercase tracking-wide text-white">Nieuw binnen</span>
           )}
         </div>
@@ -43,7 +47,9 @@ export default function MotorCard({ motor, prioriteit = false, kop = 'h3' }: { m
             {motor.naam}
           </Link>
         </Kop>
-        <p className="tabular mt-auto pt-4 font-display text-3xl font-extrabold">{formatPrijs(motor.prijs)}</p>
+        <p className={`tabular mt-auto pt-4 font-display text-3xl font-extrabold ${verkocht ? 'text-muted' : ''}`}>
+          {verkocht ? 'Verkocht' : formatPrijs(motor.prijs)}
+        </p>
       </div>
     </article>
   );

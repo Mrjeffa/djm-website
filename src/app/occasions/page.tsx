@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { ArrowRight } from 'lucide-react';
-import { getMotors, motorPad, type MotorFilters, type Sortering } from '@/lib/motors';
+import { getMotors, isVerkocht, motorPad, type MotorFilters, type Sortering } from '@/lib/motors';
 import { getInstellingen } from '@/lib/getInstellingen';
 import { BEDRIJF, OG_IMAGE } from '@/lib/site';
 import { breadcrumb, graph, itemList, webPage } from '@/lib/schema';
@@ -41,10 +41,14 @@ export default async function OccasionsPage({ searchParams }: { searchParams: Pr
     sort: SORTERINGEN.includes(p.sort as Sortering) ? (p.sort as Sortering) : undefined,
   };
   const gefilterd = Boolean(filters.merk || filters.categorie || filters.maxPrijs || filters.maxKm);
-  const [alle, inst] = await Promise.all([getMotors(), getInstellingen()]);
-  const motoren = gefilterd || filters.sort ? await getMotors(filters) : alle;
-  const merken = [...new Set(alle.map(m => m.merk))].sort();
-  const categorieen = [...new Set(alle.map(m => m.categorie).filter((c): c is string => Boolean(c)))].sort();
+  // Te koop + de afgelopen 30 dagen verkocht; verkochte motoren apart onderaan
+  const [alleMetVerkocht, inst] = await Promise.all([getMotors({}, { metVerkocht: true }), getInstellingen()]);
+  const resultaat = gefilterd || filters.sort ? await getMotors(filters, { metVerkocht: true }) : alleMetVerkocht;
+  const alle = alleMetVerkocht.filter(m => !isVerkocht(m));
+  const motoren = resultaat.filter(m => !isVerkocht(m));
+  const verkocht = resultaat.filter(isVerkocht).sort((a, b) => (b.verkochtOp ?? '').localeCompare(a.verkochtOp ?? ''));
+  const merken = [...new Set(alleMetVerkocht.map(m => m.merk))].sort();
+  const categorieen = [...new Set(alleMetVerkocht.map(m => m.categorie).filter((c): c is string => Boolean(c)))].sort();
   const kopenFaq = getFaqGroepen(inst).find(g => g.id === 'kopen')?.items ?? [];
 
   return (
@@ -63,13 +67,13 @@ export default async function OccasionsPage({ searchParams }: { searchParams: Pr
 
       <section className="py-10 lg:py-14" aria-label="Voorraad">
         <div className="container-site">
-          {alle.length > 0 && (
+          {alleMetVerkocht.length > 0 && (
             <div className="border border-line bg-white p-5">
               <OccasionFilters merken={merken} categorieen={categorieen} waarden={p} />
             </div>
           )}
 
-          {alle.length > 0 && (
+          {alleMetVerkocht.length > 0 && (
             <p className="mt-6 text-sm text-muted" aria-live="polite">
               {motoren.length} {motoren.length === 1 ? 'motor' : 'motoren'} gevonden
             </p>
@@ -92,6 +96,18 @@ export default async function OccasionsPage({ searchParams }: { searchParams: Pr
                   ? <Link href="/occasions" className="btn btn-primary">Wis filters</Link>
                   : <Link href="/contact" className="btn btn-primary">Geef je wens door</Link>}
                 <Link href="/motor-verkopen" className="btn btn-outline">Je eigen motor verkopen</Link>
+              </div>
+            </div>
+          )}
+
+          {verkocht.length > 0 && (
+            <div className="mt-14" aria-labelledby="verkocht-titel">
+              <h2 id="verkocht-titel" className="text-3xl">Onlangs verkocht</h2>
+              <p className="mt-2 max-w-2xl text-muted">
+                Deze motoren zijn de afgelopen weken verkocht. Zoek je iets vergelijkbaars? Geef het door, dan houden we je op de hoogte.
+              </p>
+              <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {verkocht.map(m => <MotorCard key={m.id} motor={m} kop="h3" />)}
               </div>
             </div>
           )}

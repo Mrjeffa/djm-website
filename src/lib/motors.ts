@@ -17,7 +17,8 @@ export type Motor = {
   uitrusting: string[];
   beschrijving: string | null;
   fotos: string[];
-  status: 'beschikbaar' | 'gereserveerd';
+  status: 'beschikbaar' | 'gereserveerd' | 'verkocht';
+  verkochtOp: string | null;
   datumIn: string | null;
   createdAt: string;
 };
@@ -33,6 +34,9 @@ export type MotorFilters = {
 };
 
 const ZICHTBAAR = ['beschikbaar', 'gereserveerd'];
+// Verkochte motoren blijven 30 dagen zichtbaar. Welke rijen een bezoeker mag zien bepaalt de
+// database (RLS: te koop, of verkocht in de afgelopen 30 dagen); kenteken en koper kan de
+// website niet opvragen (kolomrechten). Verkocht = verkocht_op gevuld.
 const UUID_RE = /([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/i;
 const MERK_SCHRIJFWIJZE: Record<string, string> = {
   bmw: 'BMW', ktm: 'KTM', 'mv agusta': 'MV Agusta', cfmoto: 'CFMOTO', 'harley-davidson': 'Harley-Davidson',
@@ -77,16 +81,23 @@ function normalize(row: Record<string, unknown>): Motor {
     uitrusting: Array.isArray(row.uitrusting) ? (row.uitrusting as string[]).filter(Boolean) : [],
     beschrijving: (row.beschrijving as string | null) || null,
     fotos: Array.isArray(row.fotos) ? (row.fotos as unknown[]).filter((f): f is string => typeof f === 'string') : [],
-    status: row.status === 'gereserveerd' ? 'gereserveerd' : 'beschikbaar',
+    status: row.verkocht_op ? 'verkocht' : row.status === 'gereserveerd' ? 'gereserveerd' : 'beschikbaar',
+    verkochtOp: (row.verkocht_op as string | null) ?? null,
     datumIn: (row.datum_in as string | null) ?? null,
     createdAt: String(row.created_at ?? ''),
   };
 }
 
-const KOLOMMEN = 'id, merk, model, bouwjaar, km, km_eenheid, prijs, type, carrosserietype, vermogen, kleur, uitvoering, uitrusting, beschrijving, fotos, status, datum_in, created_at';
+const KOLOMMEN = 'id, merk, model, bouwjaar, km, km_eenheid, prijs, type, carrosserietype, vermogen, kleur, uitvoering, uitrusting, beschrijving, fotos, status, datum_in, created_at, verkocht_op';
 
-export async function getMotors(filters: MotorFilters = {}): Promise<Motor[]> {
-  let query = client().from('voorraad').select(KOLOMMEN).in('status', ZICHTBAAR);
+export function isVerkocht(m: Pick<Motor, 'status'>): boolean {
+  return m.status === 'verkocht';
+}
+
+/** Motoren die te koop staan; met `metVerkocht` ook de motoren die de afgelopen 30 dagen verkocht zijn. */
+export async function getMotors(filters: MotorFilters = {}, { metVerkocht = false }: { metVerkocht?: boolean } = {}): Promise<Motor[]> {
+  let query = client().from('voorraad').select(KOLOMMEN);
+  if (!metVerkocht) query = query.in('status', ZICHTBAAR).is('verkocht_op', null);
   if (filters.merk) query = query.ilike('merk', filters.merk);
   if (filters.categorie) query = query.or(`carrosserietype.eq.${JSON.stringify(filters.categorie)},type.eq.${JSON.stringify(filters.categorie)}`);
   if (filters.maxPrijs) query = query.lte('prijs', filters.maxPrijs);
@@ -106,7 +117,8 @@ export async function getMotors(filters: MotorFilters = {}): Promise<Motor[]> {
 export async function getMotorBySlug(slug: string): Promise<Motor | null> {
   const id = slug.match(UUID_RE)?.[1];
   if (!id) return null;
-  const { data } = await client().from('voorraad').select(KOLOMMEN).eq('id', id).in('status', ZICHTBAAR).maybeSingle();
+  // Ook verkochte motoren (30 dagen): de pagina toont dan "Verkocht"
+  const { data } = await client().from('voorraad').select(KOLOMMEN).eq('id', id).maybeSingle();
   return data ? normalize(data) : null;
 }
 
