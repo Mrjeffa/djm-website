@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { getProducten, type ProductCategorie } from '@/lib/producten';
 import { BEDRIJF, whatsappUrl, OG_IMAGE } from '@/lib/site';
 import { breadcrumb, graph, productNode, webPage } from '@/lib/schema';
+import { getCms } from '@/lib/cms';
 import PageHeader from '@/components/PageHeader';
 import ProductCard from '@/components/ProductCard';
 import JsonLd from '@/components/JsonLd';
@@ -18,13 +19,14 @@ function leesCategorie(c?: string): ProductCategorie | undefined {
 
 export async function generateMetadata({ searchParams }: { searchParams: Promise<Params> }): Promise<Metadata> {
   const categorie = leesCategorie((await searchParams).categorie);
-  const totaal = (await getProducten()).length;
+  const [totaal, cms] = await Promise.all([getProducten().then(p => p.length), getCms()]);
+  const { title, description } = cms.seo('onderdelen', TITEL, DESCRIPTION);
   return {
-    title: TITEL,
-    description: DESCRIPTION,
+    title,
+    description,
     alternates: { canonical: '/onderdelen' },
     robots: categorie || totaal === 0 ? { index: false, follow: true } : undefined,
-    openGraph: { title: TITEL, description: DESCRIPTION, url: '/onderdelen', images: [OG_IMAGE] },
+    openGraph: { title, description, url: '/onderdelen', images: [OG_IMAGE] },
   };
 }
 

@@ -41,9 +41,10 @@ export type Instellingen = {
   opmerking: string;
   tarieven: Record<string, number>;
   diensten: DienstGroep[];
-  content: WebsiteContent;
 };
 
+// Standaardteksten als een veld in de app ("Website aanpassen", tabel website_blokken) leeg is
+// of de database onbereikbaar is. instellingen.website_content wordt niet meer gelezen.
 export const CONTENT_FALLBACK: WebsiteContent = {
   hero_regel1: 'Jouw vrijheid.',
   hero_regel2: 'Vind hem hier.',
@@ -71,7 +72,6 @@ export const INSTELLINGEN_FALLBACK: Instellingen = {
   opmerking: '',
   tarieven: {},
   diensten: [],
-  content: CONTENT_FALLBACK,
 };
 
 export function isDateGesloten(dateStr: string, inst: Instellingen): string | null {

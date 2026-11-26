@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { ArrowRight } from 'lucide-react';
 import { getInstellingen } from '@/lib/getInstellingen';
 import { euro, tarief } from '@/lib/instellingen';
+import { getCms } from '@/lib/cms';
+import { Tekst } from '@/components/Markdown';
 import { BEDRIJF, OG_IMAGE } from '@/lib/site';
 import { breadcrumb, faqNode, graph, webPage, ORG_ID } from '@/lib/schema';
 import PageHeader from '@/components/PageHeader';
@@ -12,23 +14,31 @@ import JsonLd from '@/components/JsonLd';
 const TITEL = 'Motor winterstalling in Tholen';
 const DESCRIPTION = 'Winterstalling voor je motor bij De Jonge Motoren in Tholen, Zeeland. Te combineren met een poetsbeurt of onderhoud. Bekijk de tarieven en meld je motor aan.';
 
-export const metadata: Metadata = {
-  title: TITEL,
-  description: DESCRIPTION,
-  alternates: { canonical: '/winterstalling' },
-  openGraph: { title: TITEL, description: DESCRIPTION, url: '/winterstalling', images: [OG_IMAGE] },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { title, description } = (await getCms()).seo('winterstalling', TITEL, DESCRIPTION);
+  return {
+    title,
+    description,
+    alternates: { canonical: '/winterstalling' },
+    openGraph: { title, description, url: '/winterstalling', images: [OG_IMAGE] },
+  };
+}
+
+const PAKKETTEN = [
+  { titel: 'Winterstalling', tekst: 'Je motor staat 6 maanden bij ons gestald.' },
+  { titel: 'Winterstalling met poetsbeurt', tekst: 'Stalling, en je motor gaat schoon het nieuwe seizoen in.' },
+  { titel: 'Winterstalling met kleine beurt', tekst: 'Stalling plus een kleine onderhoudsbeurt in de werkplaats.' },
+  { titel: 'Winterstalling met grote beurt', tekst: 'Stalling plus een grote onderhoudsbeurt in de werkplaats.' },
+];
+const PAKKET_TARIEVEN = ['winterstalling_6mnd', 'winterstalling_poetsen', 'winterstalling_kleine_beurt', 'winterstalling_grote_beurt'];
 
 export default async function WinterstallingPage() {
-  const inst = await getInstellingen();
+  const [inst, cms] = await Promise.all([getInstellingen(), getCms()]);
   const basis = tarief(inst, 'winterstalling_6mnd');
   const extraMaand = tarief(inst, 'winterstalling_extra_mnd');
-  const pakketten = ([
-    ['Winterstalling', 'Je motor staat 6 maanden bij ons gestald.', basis],
-    ['Winterstalling met poetsbeurt', 'Stalling, en je motor gaat schoon het nieuwe seizoen in.', tarief(inst, 'winterstalling_poetsen')],
-    ['Winterstalling met kleine beurt', 'Stalling plus een kleine onderhoudsbeurt in de werkplaats.', tarief(inst, 'winterstalling_kleine_beurt')],
-    ['Winterstalling met grote beurt', 'Stalling plus een grote onderhoudsbeurt in de werkplaats.', tarief(inst, 'winterstalling_grote_beurt')],
-  ] as [string, string, number | null][]).filter(([, , p]) => p);
+  const pakketten = (cms.lijst('winterstalling.pakketten', PAKKETTEN, { aantal: 4 })
+    .map((p, i) => [p.titel, p.tekst, tarief(inst, PAKKET_TARIEVEN[i])]) as [string, string, number | null][])
+    .filter(([, , p]) => p);
 
   const faqs = [
     ...(basis ? [{
@@ -66,7 +76,7 @@ export default async function WinterstallingPage() {
         crumbs={[{ name: 'Werkplaats', path: '/werkplaats' }, { name: 'Winterstalling', path: '/winterstalling' }]}
         eyebrow="Winterstalling"
         title={TITEL}
-        intro={`Stal je motor deze winter bij ${BEDRIJF.naam} aan de ${BEDRIJF.straat} in ${BEDRIJF.plaats}.${basis ? ` Winterstalling kost ${euro(basis)} voor 6 maanden` : ''}${basis ? ' en' : ' Je'} kunt de stalling combineren met een poetsbeurt of onderhoud.`}
+        intro={<Tekst waarde={cms.tekst('winterstalling.intro', `Stal je motor deze winter bij ${BEDRIJF.naam} aan de ${BEDRIJF.straat} in ${BEDRIJF.plaats}.${basis ? ` Winterstalling kost ${euro(basis)} voor 6 maanden` : ''}${basis ? ' en' : ' Je'} kunt de stalling combineren met een poetsbeurt of onderhoud.`)} />}
       >
         <a href="#aanmelden" className="btn btn-primary mt-8">Meld je motor aan <ArrowRight size={18} aria-hidden /></a>
       </PageHeader>
@@ -93,7 +103,7 @@ export default async function WinterstallingPage() {
         <div className="container-site grid gap-12 lg:grid-cols-12">
           <div className="lg:col-span-5">
             <h2 id="aanmelden-titel" className="text-[clamp(2rem,4vw,3rem)]">Meld je motor aan</h2>
-            <p className="mt-4 text-muted">Kies het pakket, laat je nummer achter en we bellen je om een brengdatum af te spreken.</p>
+            <Tekst className="mt-4 text-muted" waarde={cms.tekst('winterstalling.aanmelden.tekst', 'Kies het pakket, laat je nummer achter en we bellen je om een brengdatum af te spreken.')} />
             <div className="mt-10"><FaqList items={faqs} /></div>
           </div>
           <div className="border border-line bg-white p-6 sm:p-8 lg:col-span-7">

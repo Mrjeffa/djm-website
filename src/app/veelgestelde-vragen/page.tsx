@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
-import { getInstellingen } from '@/lib/getInstellingen';
 import { BEDRIJF, whatsappUrl, OG_IMAGE } from '@/lib/site';
 import { breadcrumb, faqNode, graph, webPage } from '@/lib/schema';
-import { getFaqGroepen } from '@/content/faq';
+import { getFaqs } from '@/lib/faq';
+import { getCms } from '@/lib/cms';
 import PageHeader from '@/components/PageHeader';
 import FaqList from '@/components/FaqList';
 import JsonLd from '@/components/JsonLd';
@@ -10,15 +10,18 @@ import JsonLd from '@/components/JsonLd';
 const TITEL = 'Veelgestelde vragen';
 const DESCRIPTION = 'Antwoorden op vragen over occasions kopen, je motor verkopen, onderhoud, winterstalling en openingstijden bij De Jonge Motoren in Tholen.';
 
-export const metadata: Metadata = {
-  title: 'Veelgestelde vragen over kopen, verkopen en onderhoud',
-  description: DESCRIPTION,
-  alternates: { canonical: '/veelgestelde-vragen' },
-  openGraph: { title: TITEL, description: DESCRIPTION, url: '/veelgestelde-vragen', images: [OG_IMAGE] },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { title, description } = (await getCms()).seo('faq', 'Veelgestelde vragen over kopen, verkopen en onderhoud', DESCRIPTION);
+  return {
+    title,
+    description,
+    alternates: { canonical: '/veelgestelde-vragen' },
+    openGraph: { title: TITEL, description, url: '/veelgestelde-vragen', images: [OG_IMAGE] },
+  };
+}
 
 export default async function FaqPage() {
-  const groepen = getFaqGroepen(await getInstellingen());
+  const groepen = await getFaqs();
 
   return (
     <>

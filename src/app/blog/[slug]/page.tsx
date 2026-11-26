@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
-import { BLOG_POSTS, datumNL, getPost } from '@/content/blog';
+import { notFound, permanentRedirect } from 'next/navigation';
+import { datumNL, getPost, getPosts } from '@/lib/blog';
+import { afbeeldingSrc, afbeeldingSrcSet } from '@/lib/cms';
 import { BEDRIJF, OG_IMAGE } from '@/lib/site';
 import { ORG_ID, abs, breadcrumb, graph } from '@/lib/schema';
 import { Breadcrumbs } from '@/components/PageHeader';
@@ -11,21 +12,25 @@ import JsonLd from '@/components/JsonLd';
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const post = getPost((await params).slug);
+  const { post } = await getPost((await params).slug);
   if (!post) return { title: 'Artikel niet gevonden', robots: { index: false } };
+  const beeld = post.afbeelding
+    ? [{ url: afbeeldingSrc(post.afbeelding, 1200, 630 / 1200), width: 1200, height: 630, alt: post.afbeelding.alt || post.titel }]
+    : [OG_IMAGE];
   return {
     title: post.titel,
     description: post.beschrijving,
     alternates: { canonical: `/blog/${post.slug}` },
-    openGraph: { type: 'article', title: post.titel, description: post.beschrijving, url: `/blog/${post.slug}`, publishedTime: post.gepubliceerd, modifiedTime: post.bijgewerkt, images: [OG_IMAGE] },
+    openGraph: { type: 'article', title: post.titel, description: post.beschrijving, url: `/blog/${post.slug}`, publishedTime: post.gepubliceerd, modifiedTime: post.bijgewerkt, images: beeld },
   };
 }
 
 export default async function BlogPostPage({ params }: Props) {
-  const post = getPost((await params).slug);
+  const { post, nieuweSlug } = await getPost((await params).slug);
+  if (nieuweSlug) permanentRedirect(`/blog/${nieuweSlug}`);
   if (!post) notFound();
   const pad = `/blog/${post.slug}`;
-  const meer = BLOG_POSTS.filter(p => p.slug !== post.slug).slice(0, 2);
+  const meer = (await getPosts()).filter(p => p.slug !== post.slug).slice(0, 2);
 
   return (
     <>
@@ -43,6 +48,7 @@ export default async function BlogPostPage({ params }: Props) {
           author: { '@id': ORG_ID },
           publisher: { '@id': ORG_ID },
           articleSection: post.categorie,
+          ...(post.afbeelding && { image: abs(afbeeldingSrc(post.afbeelding, 1200)) }),
         },
         breadcrumb([{ name: 'Blog', path: '/blog' }, { name: post.titel, path: pad }]),
       )} />
@@ -58,6 +64,12 @@ export default async function BlogPostPage({ params }: Props) {
             {post.bijgewerkt !== post.gepubliceerd && <> · Bijgewerkt <time dateTime={post.bijgewerkt}>{datumNL(post.bijgewerkt)}</time></>}
             {' '}· {post.leestijd} min lezen
           </p>
+          {post.afbeelding && (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img src={afbeeldingSrc(post.afbeelding, 1100)} srcSet={afbeeldingSrcSet(post.afbeelding, [640, 900, 1300])}
+              sizes="(min-width: 768px) 768px, 100vw" alt={post.afbeelding.alt} width={post.afbeelding.breedte || 1100}
+              height={post.afbeelding.hoogte || 619} className="mt-10 w-full object-cover" />
+          )}
           <div className="mt-10"><Markdown source={post.inhoud} /></div>
 
           <aside className="mt-14 border-l-4 border-red bg-surface-2 p-8">

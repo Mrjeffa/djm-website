@@ -3,6 +3,8 @@ import type { Metadata } from 'next';
 import { Clock, Mail, MapPin, MessageCircle, Phone } from 'lucide-react';
 import { getInstellingen } from '@/lib/getInstellingen';
 import { formatOpeningsTijden, vandaagStatus } from '@/lib/instellingen';
+import { getCms } from '@/lib/cms';
+import { Tekst } from '@/components/Markdown';
 import { BEDRIJF, whatsappUrl, OG_IMAGE } from '@/lib/site';
 import { breadcrumb, graph, webPage, ORG_ID } from '@/lib/schema';
 import PageHeader from '@/components/PageHeader';
@@ -11,15 +13,18 @@ import JsonLd from '@/components/JsonLd';
 const TITEL = 'Contact en route';
 const DESCRIPTION = 'Contact met De Jonge Motoren, Stevinweg 14 in Tholen. Bel 0166-606090, app 06-21908697 of mail info@dejongemotoren.nl. Bekijk de openingstijden en plan je route.';
 
-export const metadata: Metadata = {
-  title: 'Contact, openingstijden en route',
-  description: DESCRIPTION,
-  alternates: { canonical: '/contact' },
-  openGraph: { title: TITEL, description: DESCRIPTION, url: '/contact', images: [OG_IMAGE] },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { title, description } = (await getCms()).seo('contact', 'Contact, openingstijden en route', DESCRIPTION);
+  return {
+    title,
+    description,
+    alternates: { canonical: '/contact' },
+    openGraph: { title: TITEL, description, url: '/contact', images: [OG_IMAGE] },
+  };
+}
 
 export default async function ContactPage() {
-  const inst = await getInstellingen();
+  const [inst, cms] = await Promise.all([getInstellingen(), getCms()]);
   const tijden = formatOpeningsTijden(inst);
 
   const kanalen = [
@@ -39,7 +44,7 @@ export default async function ContactPage() {
         crumbs={[{ name: 'Contact', path: '/contact' }]}
         eyebrow="Contact"
         title={TITEL}
-        intro={`${BEDRIJF.naam} zit aan de ${BEDRIJF.straat}, ${BEDRIJF.postcode} ${BEDRIJF.plaats}. Bel, app of mail ons, of kom langs tijdens openingstijden.`}
+        intro={<Tekst waarde={cms.tekst('contact.intro', `${BEDRIJF.naam} zit aan de ${BEDRIJF.straat}, ${BEDRIJF.postcode} ${BEDRIJF.plaats}. Bel, app of mail ons, of kom langs tijdens openingstijden.`)} />}
       />
 
       <section className="py-16 lg:py-20">

@@ -2,10 +2,11 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { ArrowRight } from 'lucide-react';
 import { getMotors, isVerkocht, motorPad, type MotorFilters, type Sortering } from '@/lib/motors';
-import { getInstellingen } from '@/lib/getInstellingen';
 import { BEDRIJF, OG_IMAGE } from '@/lib/site';
 import { breadcrumb, graph, itemList, webPage } from '@/lib/schema';
-import { getFaqGroepen } from '@/content/faq';
+import { getFaqs } from '@/lib/faq';
+import { getCms } from '@/lib/cms';
+import Markdown, { Tekst } from '@/components/Markdown';
 import PageHeader from '@/components/PageHeader';
 import MotorCard from '@/components/MotorCard';
 import OccasionFilters from '@/components/OccasionFilters';
@@ -20,14 +21,21 @@ const DESCRIPTION = 'Bekijk de gebruikte motoren van De Jonge Motoren in Tholen.
 export async function generateMetadata({ searchParams }: { searchParams: Promise<Params> }): Promise<Metadata> {
   const p = await searchParams;
   const gefilterd = Object.values(p).some(Boolean);
+  const { title, description } = (await getCms()).seo('occasions', TITEL, DESCRIPTION);
   return {
-    title: TITEL,
-    description: DESCRIPTION,
+    title,
+    description,
     alternates: { canonical: '/occasions' },
     robots: gefilterd ? { index: false, follow: true } : undefined,
-    openGraph: { title: TITEL, description: DESCRIPTION, url: '/occasions', images: [OG_IMAGE] },
+    openGraph: { title, description, url: '/occasions', images: [OG_IMAGE] },
   };
 }
+
+const KOPEN_TEKST = `Bij ${BEDRIJF.naam} koop je een gebruikte motor van een zaak die al ${BEDRIJF.jarenErvaring} jaar in ${BEDRIJF.plaats} zit. Je ziet de motor in het echt, je maakt een proefrit en je stelt je vragen aan de mensen die de motor hebben ingekocht.
+
+Een proefrit is gratis. Neem een geldig rijbewijs mee dat past bij de motor (A of A2), je eigen helm en motorkleding. Bel of app vooraf, dan staat de motor klaar.
+
+Wil je je huidige motor kwijt? Laat hem taxeren via [motor verkopen](/motor-verkopen). Twijfel je over een motor die je elders wilt kopen? Onze [werkplaats](/werkplaats) doet ook aankoopkeuringen.`;
 
 const SORTERINGEN: Sortering[] = ['nieuw', 'prijs-op', 'prijs-af', 'km'];
 
@@ -42,14 +50,14 @@ export default async function OccasionsPage({ searchParams }: { searchParams: Pr
   };
   const gefilterd = Boolean(filters.merk || filters.categorie || filters.maxPrijs || filters.maxKm);
   // Te koop + de afgelopen 30 dagen verkocht; verkochte motoren apart onderaan
-  const [alleMetVerkocht, inst] = await Promise.all([getMotors({}, { metVerkocht: true }), getInstellingen()]);
+  const [alleMetVerkocht, cms, faqGroepen] = await Promise.all([getMotors({}, { metVerkocht: true }), getCms(), getFaqs()]);
   const resultaat = gefilterd || filters.sort ? await getMotors(filters, { metVerkocht: true }) : alleMetVerkocht;
   const alle = alleMetVerkocht.filter(m => !isVerkocht(m));
   const motoren = resultaat.filter(m => !isVerkocht(m));
   const verkocht = resultaat.filter(isVerkocht).sort((a, b) => (b.verkochtOp ?? '').localeCompare(a.verkochtOp ?? ''));
   const merken = [...new Set(alleMetVerkocht.map(m => m.merk))].sort();
   const categorieen = [...new Set(alleMetVerkocht.map(m => m.categorie).filter((c): c is string => Boolean(c)))].sort();
-  const kopenFaq = getFaqGroepen(inst).find(g => g.id === 'kopen')?.items ?? [];
+  const kopenFaq = faqGroepen.find(g => g.id === 'kopen')?.items ?? [];
 
   return (
     <>
@@ -62,7 +70,7 @@ export default async function OccasionsPage({ searchParams }: { searchParams: Pr
         crumbs={[{ name: 'Occasions', path: '/occasions' }]}
         eyebrow={alle.length ? `${alle.length} ${alle.length === 1 ? 'motor' : 'motoren'} op voorraad` : 'Voorraad'}
         title={TITEL}
-        intro={`Elke occasion staat bij ${BEDRIJF.naam} aan de ${BEDRIJF.straat} in ${BEDRIJF.plaats}. Zie je iets dat je bevalt? Plan een gratis proefrit of stuur ons een WhatsApp.`}
+        intro={<Tekst waarde={cms.tekst('occasions.intro', `Elke occasion staat bij ${BEDRIJF.naam} aan de ${BEDRIJF.straat} in ${BEDRIJF.plaats}. Zie je iets dat je bevalt? Plan een gratis proefrit of stuur ons een WhatsApp.`)} />}
       />
 
       <section className="py-10 lg:py-14" aria-label="Voorraad">
@@ -116,17 +124,9 @@ export default async function OccasionsPage({ searchParams }: { searchParams: Pr
 
       <section className="border-t border-line bg-surface-2 py-16 lg:py-20" aria-labelledby="kopen-titel">
         <div className="container-site grid gap-12 lg:grid-cols-2">
-          <div className="prose-djm">
-            <h2 id="kopen-titel" className="!mt-0 text-[clamp(2rem,4vw,3rem)]">Een occasion kopen bij De Jonge Motoren</h2>
-            <p>
-              Bij {BEDRIJF.naam} koop je een gebruikte motor van een zaak die al {BEDRIJF.jarenErvaring} jaar in {BEDRIJF.plaats} zit. Je ziet de motor in het echt, je maakt een proefrit en je stelt je vragen aan de mensen die de motor hebben ingekocht.
-            </p>
-            <p>
-              Een proefrit is gratis. Neem een geldig rijbewijs mee dat past bij de motor (A of A2), je eigen helm en motorkleding. Bel of app vooraf, dan staat de motor klaar.
-            </p>
-            <p>
-              Wil je je huidige motor kwijt? Laat hem taxeren via <Link href="/motor-verkopen">motor verkopen</Link>. Twijfel je over een motor die je elders wilt kopen? Onze <Link href="/werkplaats">werkplaats</Link> doet ook aankoopkeuringen.
-            </p>
+          <div>
+            <h2 id="kopen-titel" className="text-[clamp(2rem,4vw,3rem)]">{cms.tekst('occasions.kopen.titel', `Een occasion kopen bij ${BEDRIJF.naam}`)}</h2>
+            <div className="mt-6"><Markdown source={cms.tekst('occasions.kopen.tekst', KOPEN_TEKST)} /></div>
           </div>
           <div>
             <h2 className="text-2xl">Vragen over kopen</h2>

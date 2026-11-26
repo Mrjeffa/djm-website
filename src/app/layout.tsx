@@ -6,6 +6,9 @@ import Footer from '@/components/Footer';
 import MobileContactBar from '@/components/MobileContactBar';
 import JsonLd from '@/components/JsonLd';
 import { getInstellingen } from '@/lib/getInstellingen';
+import { getCms } from '@/lib/cms';
+import { getPaginas, paginaPad } from '@/lib/paginas';
+import { CONTENT_FALLBACK } from '@/lib/instellingen';
 import { vandaagStatus } from '@/lib/instellingen';
 import { businessNodes, graph } from '@/lib/schema';
 import { BEDRIJF, SITE_URL } from '@/lib/site';
@@ -34,7 +37,8 @@ export const metadata: Metadata = {
 export const viewport: Viewport = { themeColor: '#0B0B0C' };
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const instellingen = await getInstellingen();
+  const [instellingen, cms, paginas] = await Promise.all([getInstellingen(), getCms(), getPaginas()]);
+  const menu = paginas.filter(p => p.inMenu).map(p => ({ href: paginaPad(p), label: p.titel, sjabloon: p.sjabloon }));
 
   return (
     <html lang="nl" className={`${barlow.variable} ${barlowCondensed.variable}`}>
@@ -45,7 +49,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <JsonLd data={graph(businessNodes(instellingen))} />
         <Header status={vandaagStatus(instellingen)} melding={instellingen.opmerking || undefined} />
         <main id="inhoud" className="flex-1">{children}</main>
-        <Footer instellingen={instellingen} />
+        <Footer instellingen={instellingen} tagline={cms.tekst('algemeen.footer.tagline', CONTENT_FALLBACK.footer_tagline)} paginas={menu} />
         <MobileContactBar />
       </body>
     </html>
