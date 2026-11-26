@@ -2,7 +2,7 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { OG_IMAGE } from '@/lib/site';
 import { ArrowRight } from 'lucide-react';
-import { BLOG_POSTS, datumNL } from '@/content/blog';
+import { datumNL, getPosts } from '@/lib/blog';
 import { ORG_ID, abs, breadcrumb, graph, webPage } from '@/lib/schema';
 import PageHeader from '@/components/PageHeader';
 import JsonLd from '@/components/JsonLd';
@@ -17,8 +17,8 @@ export const metadata: Metadata = {
   openGraph: { title: TITEL, description: DESCRIPTION, url: '/blog', images: [OG_IMAGE] },
 };
 
-export default function BlogPage() {
-  const posts = [...BLOG_POSTS].sort((a, b) => b.gepubliceerd.localeCompare(a.gepubliceerd));
+export default async function BlogPage() {
+  const posts = await getPosts();
   return (
     <>
       <JsonLd data={graph(
@@ -33,6 +33,7 @@ export default function BlogPage() {
 
       <section className="py-16 lg:py-20">
         <div className="container-site grid gap-6 md:grid-cols-2">
+          {posts.length === 0 && <p className="text-muted">Er staan nog geen artikelen online.</p>}
           {posts.map(p => (
             <article key={p.slug} className="group relative flex flex-col border border-line p-8 transition-colors hover:border-ink">
               <p className="text-sm text-muted">

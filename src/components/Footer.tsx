@@ -2,6 +2,9 @@ import Link from 'next/link';
 import { Mail, MapPin, MessageCircle, Phone } from 'lucide-react';
 import { BEDRIJF, whatsappUrl } from '@/lib/site';
 import { formatOpeningsTijden, type Instellingen } from '@/lib/instellingen';
+import { Tekst } from './Markdown';
+
+type MenuPagina = { href: string; label: string; sjabloon: 'dienst' | 'info' };
 
 const KOLOMMEN = [
   {
@@ -31,8 +34,18 @@ const KOLOMMEN = [
   },
 ];
 
-export default function Footer({ instellingen }: { instellingen: Instellingen }) {
+export default function Footer({ instellingen, tagline, paginas = [] }: { instellingen: Instellingen; tagline: string; paginas?: MenuPagina[] }) {
   const tijden = formatOpeningsTijden(instellingen);
+  // Eigen dienst- en infopagina's uit de app ("Tonen in menu") onder Diensten en Over DJM
+  const kolommen = KOLOMMEN.map(k => ({
+    ...k,
+    links: [
+      ...k.links,
+      ...paginas
+        .filter(p => (k.titel === 'Diensten' && p.sjabloon === 'dienst') || (k.titel === 'Over DJM' && p.sjabloon === 'info'))
+        .map(p => ({ href: p.href, label: p.label })),
+    ],
+  }));
 
   return (
     <footer className="on-dark bg-dark text-white">
@@ -40,7 +53,7 @@ export default function Footer({ instellingen }: { instellingen: Instellingen })
         <div className="lg:col-span-4">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/logo-djm.webp" alt={BEDRIJF.naam} width={560} height={234} loading="lazy" className="h-16 w-auto" />
-          <p className="mt-5 max-w-sm text-muted-on-dark">{instellingen.content.footer_tagline}</p>
+          <Tekst className="mt-5 max-w-sm text-muted-on-dark" waarde={tagline} />
           <address className="mt-6 space-y-3 not-italic">
             <a href={BEDRIJF.mapsUrl} target="_blank" rel="noopener noreferrer" className="flex gap-3 hover:text-white text-muted-on-dark">
               <MapPin size={18} className="mt-0.5 shrink-0 text-red-on-dark" aria-hidden />
@@ -59,7 +72,7 @@ export default function Footer({ instellingen }: { instellingen: Instellingen })
         </div>
 
         <div className="grid gap-10 sm:grid-cols-3 lg:col-span-5">
-          {KOLOMMEN.map(k => (
+          {kolommen.map(k => (
             <nav key={k.titel} aria-label={k.titel}>
               <h2 className="font-display text-base tracking-[0.14em] text-white">{k.titel}</h2>
               <ul className="mt-4 space-y-1">

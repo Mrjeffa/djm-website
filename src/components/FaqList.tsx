@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
 import type { Faq } from '@/content/faq';
+import { Tekst } from './Markdown';
 
 export default function FaqList({ items, kop = 'h3' }: { items: Faq[]; kop?: 'h2' | 'h3' }) {
   const Kop = kop;
@@ -13,7 +14,7 @@ export default function FaqList({ items, kop = 'h3' }: { items: Faq[]; kop?: 'h2
             <Plus size={22} className="shrink-0 transition-transform duration-200 group-open:rotate-45" aria-hidden />
           </summary>
           <div className="pb-6 pr-10 text-muted">
-            <p>{f.antwoord}</p>
+            <Tekst waarde={f.antwoord} />
             {f.link && <Link href={f.link.href} className="link-arrow mt-3 text-sm">{f.link.label}</Link>}
           </div>
         </details>

@@ -2,6 +2,7 @@ import { BEDRIJF, SITE_URL } from './site';
 import { DAG_SCHEMA, type DagCode, type Instellingen } from './instellingen';
 import { motorPad, type Motor } from './motors';
 import type { Product } from './producten';
+import { platteTekst } from './tekst';
 
 export const ORG_ID = `${SITE_URL}/#organization`;
 export const WEBSITE_ID = `${SITE_URL}/#website`;
@@ -161,7 +162,7 @@ export function faqNode(path: string, faqs: { vraag: string; antwoord: string }[
   return {
     '@type': 'FAQPage',
     '@id': `${abs(path)}#faq`,
-    mainEntity: faqs.map(f => ({ '@type': 'Question', name: f.vraag, acceptedAnswer: { '@type': 'Answer', text: f.antwoord } })),
+    mainEntity: faqs.map(f => ({ '@type': 'Question', name: f.vraag, acceptedAnswer: { '@type': 'Answer', text: platteTekst(f.antwoord) } })),
   };
 }
 

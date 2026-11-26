@@ -1,14 +1,17 @@
 import { getMotors, formatKm, formatPrijs, motorPad } from '@/lib/motors';
 import { getInstellingen } from '@/lib/getInstellingen';
 import { euro, formatOpeningsTijden, tarief } from '@/lib/instellingen';
-import { BLOG_POSTS } from '@/content/blog';
+import { getPosts } from '@/lib/blog';
+import { getPaginas, paginaPad } from '@/lib/paginas';
+import { platteTekst } from '@/lib/tekst';
 import { BEDRIJF, SITE_URL } from '@/lib/site';
 
 export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  const [motoren, inst] = await Promise.all([getMotors(), getInstellingen()]);
+  const [motoren, inst, posts, paginas] = await Promise.all([getMotors(), getInstellingen(), getPosts(), getPaginas()]);
+  const regel = (t: string) => platteTekst(t).replace(/[\r\n]+/g, ' ');
   const u = (p: string) => `${SITE_URL}${p}`;
   const tijden = formatOpeningsTijden(inst).map(t => `${t.label}: ${t.waarde}`).join('; ');
   const tarieven = ([
@@ -43,6 +46,7 @@ ${motoren.slice(0, 30).map(m => `- [${m.naam} (${m.bouwjaar})](${u(motorPad(m))}
 - [Winterstalling](${u('/winterstalling')}): stalling voor 6 maanden, te combineren met poetsen of onderhoud.
 - [Motor verkopen](${u('/motor-verkopen')}): inkoop van motoren van alle merken met vrijblijvende taxatie.
 - [Onderdelen en accessoires](${u('/onderdelen')}): onderdelen en accessoires op voorraad.
+${paginas.filter(p => p.sjabloon === 'dienst').map(p => `- [${regel(p.titel)}](${u(paginaPad(p))}): ${regel(p.intro)}${p.prijs ? ` Prijs: ${regel(p.prijs)}.` : ''}`).join('\n')}
 
 ## Tarieven
 
@@ -53,7 +57,8 @@ ${tarieven.join('\n') || '- Op aanvraag'}
 - [Over ons](${u('/over-ons')}): geschiedenis van het bedrijf en de overname.
 - [Veelgestelde vragen](${u('/veelgestelde-vragen')}): kopen, verkopen, werkplaats, stalling en openingstijden.
 - [Contact en route](${u('/contact')}): adres, telefoon, WhatsApp en openingstijden.
-${BLOG_POSTS.map(p => `- [${p.titel}](${u(`/blog/${p.slug}`)}): ${p.beschrijving}`).join('\n')}
+${paginas.filter(p => p.sjabloon === 'info').map(p => `- [${regel(p.titel)}](${u(paginaPad(p))}): ${regel(p.intro)}`).join('\n')}
+${posts.map(p => `- [${regel(p.titel)}](${u(`/blog/${p.slug}`)}): ${regel(p.beschrijving)}`).join('\n')}
 `;
 
   return new Response(body, {
