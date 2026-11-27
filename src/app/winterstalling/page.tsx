@@ -7,7 +7,7 @@ import { Tekst } from '@/components/Markdown';
 import { BEDRIJF, OG_IMAGE } from '@/lib/site';
 import { breadcrumb, faqNode, graph, webPage, ORG_ID } from '@/lib/schema';
 import PageHeader from '@/components/PageHeader';
-import WerkplaatsForm from '@/components/forms/WerkplaatsForm';
+import WinterstallingForm from '@/components/forms/WinterstallingForm';
 import FaqList from '@/components/FaqList';
 import JsonLd from '@/components/JsonLd';
 
@@ -36,9 +36,9 @@ export default async function WinterstallingPage() {
   const [inst, cms] = await Promise.all([getInstellingen(), getCms()]);
   const basis = tarief(inst, 'winterstalling_6mnd');
   const extraMaand = tarief(inst, 'winterstalling_extra_mnd');
-  const pakketten = (cms.lijst('winterstalling.pakketten', PAKKETTEN, { aantal: 4 })
-    .map((p, i) => [p.titel, p.tekst, tarief(inst, PAKKET_TARIEVEN[i])]) as [string, string, number | null][])
-    .filter(([, , p]) => p);
+  const allePakketten = cms.lijst('winterstalling.pakketten', PAKKETTEN, { aantal: 4 })
+    .map((p, i) => [p.titel, p.tekst, tarief(inst, PAKKET_TARIEVEN[i])]) as [string, string, number | null][];
+  const pakketten = allePakketten.filter(([, , p]) => p);
 
   const faqs = [
     ...(basis ? [{
@@ -47,7 +47,7 @@ export default async function WinterstallingPage() {
     }] : []),
     {
       vraag: 'Hoe meld ik mijn motor aan voor winterstalling?',
-      antwoord: `Vul het formulier op deze pagina in en kies het stallingspakket dat je wilt. ${BEDRIJF.naam} belt je om een datum af te spreken waarop je de motor brengt. Bestaande klanten plannen dit ook in de DJM-app.`,
+      antwoord: `Vul het formulier op deze pagina in en kies het stallingspakket dat je wilt. ${BEDRIJF.naam} belt je om de reservering te bevestigen en een datum af te spreken waarop je de motor brengt. Bestaande klanten kunnen hun motor ook aanmelden in de DJM-app.`,
     },
     {
       vraag: 'Kan ik onderhoud laten doen tijdens de winterstalling?',
@@ -107,11 +107,7 @@ export default async function WinterstallingPage() {
             <div className="mt-10"><FaqList items={faqs} /></div>
           </div>
           <div className="border border-line bg-white p-6 sm:p-8 lg:col-span-7">
-            <WerkplaatsForm
-              instellingen={inst}
-              voorkeur={pakketten[0]?.[0]}
-              extra={pakketten.length ? [{ label: 'Winterstalling', items: pakketten.map(([naam]) => ({ naam, duur: 1 })) }] : []}
-            />
+            <WinterstallingForm pakketten={allePakketten.map(([naam]) => naam).filter(Boolean)} />
           </div>
         </div>
       </section>
